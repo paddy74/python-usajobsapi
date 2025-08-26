@@ -1,0 +1,6 @@
+[project]
+name = "python-usajobsapi"
+version = "0.1.0"
+description = "A Python wrapper for the USA Jobs REST API."
+readme = "README.md"
+dependencies = []
