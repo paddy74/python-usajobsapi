@@ -13,7 +13,7 @@ from usajobsapi.endpoints import (
 )
 
 
-class USAJobsApiClient:
+class USAJobsClient:
     """Represents a client connection to the USAJOBS REST API."""
 
     def __init__(
