@@ -1,9 +1,15 @@
 """Wrapper for the Job Search API."""
 
 from enum import StrEnum
-from typing import Annotated, Dict, List, Optional
+from typing import Annotated, Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 from usajobsapi.utils import _dump_by_alias
 
@@ -196,6 +202,7 @@ class SearchEndpoint(BaseModel):
 
     # Response shapes
     # ---
+
     class JobSummary(BaseModel):
         id: str = Field(alias="MatchedObjectId")
         position_title: str = Field(alias="PositionTitle")
@@ -209,5 +216,38 @@ class SearchEndpoint(BaseModel):
             default=None, alias="ApplicationCloseDate"
         )
 
+    class SearchResult(BaseModel):
+        result_count: Optional[int] = Field(
+            default=None,
+            alias="SearchResultCount",
+        )
+        result_total: Optional[int] = Field(
+            default=None,
+            alias="SearchResultCountAll",
+        )
+        items: List[Dict[str, Any]] = Field(
+            default_factory=list,
+            alias="SearchResultItems",
+        )
+
+        def jobs(self) -> List["SearchEndpoint.JobSummary"]:
+            # Convert to a normalized list versus keeping raw
+            out: List[SearchEndpoint.JobSummary] = []
+            for item in self.items:
+                # Some responses nest the item under 'MatchedObjectDescriptor'
+                descriptor = item.get("MatchedObjectDescriptor") or item
+                try:
+                    out.append(SearchEndpoint.JobSummary.model_validate(descriptor))
+                except Exception:
+                    continue
+            return out
+
     class Response(BaseModel):
-        pass
+        language: Optional[str] = Field(default=None, alias="LanguageCode")
+        params: Optional["SearchEndpoint.Params"] = Field(
+            default=None, alias="SearchParameters"
+        )
+        # Results are wrapped under SearchResult
+        search_result: Optional["SearchEndpoint.SearchResult"] = Field(
+            default=None, alias="SearchResult"
+        )
