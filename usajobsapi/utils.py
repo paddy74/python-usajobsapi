@@ -34,7 +34,7 @@ def _dump_by_alias(model: BaseModel) -> Dict[str, str]:
     :rtype: Dict[str, str]
     """
     # Use the API's wire names and drop `None`s
-    raw = model.model_dump(by_alias=True, exclude_none=True)
+    raw = model.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     # Normalize values
     out: Dict[str, str] = {}
