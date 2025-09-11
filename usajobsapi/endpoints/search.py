@@ -3,7 +3,7 @@
 from enum import StrEnum
 from typing import Annotated, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from usajobsapi.utils import _dump_by_alias
 
@@ -174,6 +174,22 @@ class SearchEndpoint(BaseModel):
         remote_indicator: Optional[bool] = Field(
             None, serialization_alias="RemoteIndicator"
         )
+
+        @model_validator(mode="after")
+        def _radius_requires_location(self) -> "SearchEndpoint.Params":
+            if self.radius is not None and not self.location_names:
+                raise ValueError("Radius requires at least one LocationName.")
+            return self
+
+        @field_validator("remuneration_max")
+        @classmethod
+        def _check_min_le_max(cls, v, info):
+            mn = info.data.get("remuneration_min")
+            if v is not None and mn is not None and v < mn:
+                raise ValueError(
+                    "RemunerationMaximumAmount must be >= RemunerationMinimumAmount."
+                )
+            return v
 
         def to_params(self) -> Dict[str, str]:
             return _dump_by_alias(self)
