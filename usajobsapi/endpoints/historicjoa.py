@@ -1,6 +1,6 @@
 """Wrapper for the Historic JOAs API."""
 
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -95,4 +95,12 @@ class HistoricJoaEndpoint(BaseModel):
     class Response(BaseModel):
         """Declarative definition for the endpoint's response object."""
 
-        pass
+        paging: Optional["HistoricJoaEndpoint.Paging"] = None
+        data: List["HistoricJoaEndpoint.Item"] = Field(default_factory=list)
+
+        def next_token(self) -> Optional[str]:
+            return (
+                self.paging.metadata.continuation_token
+                if self.paging and self.paging.metadata
+                else None
+            )
