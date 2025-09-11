@@ -1,5 +1,7 @@
 """Wrapper for the Job Search API."""
 
+from __future__ import annotations
+
 from enum import StrEnum
 from typing import Annotated, Any, Dict, List, Optional
 
@@ -240,7 +242,7 @@ class SearchEndpoint(BaseModel):
             alias="SearchResultItems",
         )
 
-        def jobs(self) -> List["SearchEndpoint.JobSummary"]:
+        def jobs(self) -> List[SearchEndpoint.JobSummary]:
             # Convert to a normalized list versus keeping raw
             out: List[SearchEndpoint.JobSummary] = []
             for item in self.items:
@@ -256,10 +258,10 @@ class SearchEndpoint(BaseModel):
         """Declarative definition for the endpoint's response object."""
 
         language: Optional[str] = Field(default=None, alias="LanguageCode")
-        params: Optional["SearchEndpoint.Params"] = Field(
+        params: Optional[SearchEndpoint.Params] = Field(
             default=None, alias="SearchParameters"
         )
         # Results are wrapped under SearchResult
-        search_result: Optional["SearchEndpoint.SearchResult"] = Field(
+        search_result: Optional[SearchEndpoint.SearchResult] = Field(
             default=None, alias="SearchResult"
         )
