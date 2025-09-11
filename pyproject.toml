@@ -26,6 +26,7 @@ packages = ["usajobsapi"]
 dev = [
     "pre-commit>=4.3.0",
     "pytest>=8.4.1",
+    "pytest-cov>=7.0.0",
     "ruff>=0.12.11",
 ]
 
