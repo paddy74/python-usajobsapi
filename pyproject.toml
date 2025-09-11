@@ -7,7 +7,7 @@ name = "python-usajobsapi"
 version = "0.1.0"
 description = "A Python wrapper for the USA Jobs REST API."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = {file = "LICENSE"}
 dependencies = [
     "pydantic>=2.11.7",
