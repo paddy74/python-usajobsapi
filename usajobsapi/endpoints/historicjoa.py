@@ -60,6 +60,38 @@ class HistoricJoaEndpoint(BaseModel):
         def to_params(self) -> Dict[str, str]:
             return _dump_by_alias(self)
 
+    # Response shapes
+    # ---
+
+    class Item(BaseModel):
+        usajobs_control_number: int = Field(alias="usajobsControlNumber")
+        position_title: Optional[str] = Field(default=None, alias="positionTitle")
+        hiring_agency_code: Optional[str] = Field(
+            default=None, alias="hiringAgencyCode"
+        )
+        hiring_department_code: Optional[str] = Field(
+            default=None, alias="hiringDepartmentCode"
+        )
+        position_open_date: Optional[str] = Field(
+            default=None, alias="positionOpenDate"
+        )
+        position_close_date: Optional[str] = Field(
+            default=None, alias="positionCloseDate"
+        )
+        minimum_salary: Optional[float] = Field(default=None, alias="minimumSalary")
+        maximum_salary: Optional[float] = Field(default=None, alias="maximumSalary")
+
+    class PagingMeta(BaseModel):
+        total_count: Optional[int] = Field(default=None, alias="totalCount")
+        page_size: Optional[int] = Field(default=None, alias="pageSize")
+        continuation_token: Optional[str] = Field(
+            default=None, alias="continuationToken"
+        )
+
+    class Paging(BaseModel):
+        metadata: "HistoricJoaEndpoint.PagingMeta"
+        next: Optional[str] = None
+
     class Response(BaseModel):
         """Declarative definition for the endpoint's response object."""
 
