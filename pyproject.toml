@@ -1,6 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "python-usajobsapi"
 version = "0.1.0"
 description = "A Python wrapper for the USA Jobs REST API."
 readme = "README.md"
-dependencies = []
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+dependencies = [
+    "pydantic>=2.11.7",
+    "requests>=2.32.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["usajobsapi"]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.1",
+    "ruff>=0.12.11",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
