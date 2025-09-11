@@ -110,10 +110,10 @@ class USAJobsApiClient:
         )
         return AnnouncementTextEndpoint.Response.model_validate(resp.json())
 
-    def job_search(self, **kwargs) -> SearchEndpoint.Response:
-        """Query the Job Search API.
+    def search_jobs(self, **kwargs) -> SearchEndpoint.Response:
+        """Query the [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search).
 
-        :return: _description_
+        :return: Active job listings matching the search criteria.
         :rtype: SearchEndpoint.Response
         """
         params = SearchEndpoint.Params(**kwargs)
