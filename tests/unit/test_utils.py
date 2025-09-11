@@ -1,15 +1,16 @@
-from enum import Enum
-from typing import Annotated, List, Optional
+from enum import StrEnum
+from typing import Annotated, Any, List, Optional
 
 import pytest
 from pydantic import BaseModel, Field
 
-from usajobsapi.utils import _dump_by_alias
+from usajobsapi.utils import _dump_by_alias, _normalize_param
 
-# _dump_by_alias
+# testing models
+# ---
 
 
-class Color(str, Enum):
+class Color(StrEnum):
     RED = "red"
     BLUE = "blue"
 
@@ -32,6 +33,72 @@ class QueryModel(BaseModel):
     none_field: Annotated[Optional[str], Field(serialization_alias="G")] = None
 
 
+# test _normalize_param
+# ---
+
+
+def test_none_returns_none():
+    assert _normalize_param(None) is None
+
+
+@pytest.mark.parametrize("val,expected", [(True, "True"), (False, "False")])
+def test_boolean_formatting(val: bool, expected: str):
+    assert _normalize_param(val) == expected
+
+
+@pytest.mark.parametrize(
+    "val,expected",
+    [
+        ("hello", "hello"),
+        ("", ""),  # empty string should remain empty
+        (0, "0"),  # zero preserved
+        (123, "123"),
+        (12.5, "12.5"),
+    ],
+)
+def test_scalars_stringified(val: Any, expected: str):
+    assert _normalize_param(val) == expected
+
+
+def test_enum_stringified_to_value():
+    assert _normalize_param(Color.BLUE) == "blue"
+
+
+def test_list_of_strings_joined_with_semicolon():
+    assert _normalize_param(["a", "b", "c"]) == "a;b;c"
+
+
+def test_list_of_ints_joined_with_semicolon():
+    assert _normalize_param([1, 2, 3]) == "1;2;3"
+
+
+def test_list_of_enums_joined_with_semicolon():
+    assert _normalize_param([Color.RED, Color.BLUE]) == "red;blue"
+
+
+def test_list_of_mixed_types_joined_with_semicolon():
+    mixed = [1, "x", Color.RED, True]
+    assert _normalize_param(mixed) == "1;x;red;True"
+
+
+def test_empty_list_returns_none():
+    assert _normalize_param([]) is None
+
+
+def test_tuple_is_not_joined_but_stringified():
+    # Tuples are not treated as list; falls back to str(value)
+    assert _normalize_param((1, 2)) == "(1, 2)"
+
+
+def test_nested_list_is_stringified_element_then_joined():
+    # Inner list becomes a string -> "1;[2, 3]"
+    assert _normalize_param([1, [2, 3]]) == "1;[2, 3]"
+
+
+# test _dump_by_alias
+# ---
+
+
 def test_uses_alias_names():
     m = QueryModel(a_str="hello", a_int=42)
     out = _dump_by_alias(m)
@@ -39,7 +106,7 @@ def test_uses_alias_names():
 
 
 @pytest.mark.parametrize("val,expected", [(True, "True"), (False, "False")])
-def test_boolean_formatting(val, expected):
+def test_boolean_formatting_dump(val, expected):
     m = QueryModel(a_bool=val)
     out = _dump_by_alias(m)
     assert out == {"B": expected}
@@ -68,9 +135,9 @@ def test_zero_and_false_are_preserved():
 
 
 def test_enum_serialization():
-    m = QueryModel(enum_field=Color.BLUE)  # pyright: ignore[reportCallIssue]
+    m = QueryModel(enum_field=Color.BLUE)
     out = _dump_by_alias(m)
-    assert out == {"E": "Color.BLUE"}
+    assert out == {"E": "blue"}
 
 
 def test_empty_string_is_omitted():
