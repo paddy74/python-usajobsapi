@@ -11,6 +11,7 @@ requires-python = ">=3.9"
 license = {file = "LICENSE"}
 dependencies = [
     "pydantic>=2.11.7",
+    "requests>=2.32.5",
 ]
 
 [tool.hatch.build.targets.wheel]
