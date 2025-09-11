@@ -132,8 +132,8 @@ class USAJobsApiClient:
         """
         params = HistoricJoaEndpoint.Params(**kwargs)
         resp = self._request(
-            HistoricJoaEndpoint.model_fields["method"].default,
-            HistoricJoaEndpoint.model_fields["path"].default,
+            HistoricJoaEndpoint.model_fields["METHOD"].default,
+            HistoricJoaEndpoint.model_fields["PATH"].default,
             params.to_params(),
         )
         return HistoricJoaEndpoint.Response.model_validate(resp.json())
