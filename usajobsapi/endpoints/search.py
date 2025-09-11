@@ -1,9 +1,9 @@
 """Wrapper for the Job Search API."""
 
 from enum import StrEnum
-from typing import Dict
+from typing import Dict, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from usajobsapi.utils import _dump_by_alias
 
@@ -73,8 +73,25 @@ class SearchEndpoint(BaseModel):
     path: str = "/api/search"
 
     class Params(BaseModel):
+        """Query-params"""
+
         def to_params(self) -> Dict[str, str]:
             return _dump_by_alias(self)
+
+    # Response shapes
+    # ---
+    class JobSummary(BaseModel):
+        id: str = Field(alias="MatchedObjectId")
+        position_title: str = Field(alias="PositionTitle")
+        organization_name: Optional[str] = Field(default=None, alias="OrganizationName")
+        locations_display: Optional[str] = Field(
+            default=None, alias="PositionLocationDisplay"
+        )
+        min_salary: Optional[float] = Field(default=None, alias="MinimumRange")
+        max_salary: Optional[float] = Field(default=None, alias="MaximumRange")
+        application_close_date: Optional[str] = Field(
+            default=None, alias="ApplicationCloseDate"
+        )
 
     class Response(BaseModel):
         pass
