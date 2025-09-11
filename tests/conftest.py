@@ -22,6 +22,20 @@ def historicjoa_params_kwargs() -> Dict[str, str]:
 
 
 @pytest.fixture
+def job_summary_payload():
+    """Sample payload matching the API's job summary schema."""
+    return {
+        "MatchedObjectId": "1",
+        "PositionTitle": "Engineer",
+        "OrganizationName": "NASA",
+        "PositionLocationDisplay": "Houston, TX",
+        "MinimumRange": 50000.0,
+        "MaximumRange": 100000.0,
+        "ApplicationCloseDate": "2024-01-01",
+    }
+
+
+@pytest.fixture
 def historicjoa_response_payload() -> Dict[str, object]:
     """Serialized Historic JOA response payload mimicking the USAJOBS API."""
 
@@ -137,3 +151,9 @@ def _historicjoa_items() -> List[Dict[str, object]]:
             ],
         },
     ]
+
+
+@pytest.fixture
+def search_result_item(job_summary_payload):
+    """Wrap the job summary payload under the expected descriptor key."""
+    return {"MatchedObjectDescriptor": job_summary_payload}
