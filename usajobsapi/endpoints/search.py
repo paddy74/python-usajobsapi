@@ -18,6 +18,8 @@ from usajobsapi.utils import _dump_by_alias
 
 
 class SortField(StrEnum):
+    """Sort the search by the specified field."""
+
     OPEN_DATE = "opendate"
     CLOSED_DATE = "closedate"
     ORGANIZATION_NAME = "organizationname"
@@ -35,22 +37,30 @@ class SortField(StrEnum):
 
 
 class SortDirection(StrEnum):
+    """Sort the search by the SortField specified, in the direction specified."""
+
     ASC = "Asc"
     DESC = "Desc"
 
 
 class WhoMayApply(StrEnum):
+    """Filter the search by the specified candidate designation."""
+
     ALL = "All"
     PUBLIC = "Public"
     STATUS = "Status"
 
 
 class Fields(StrEnum):
-    MIN = "Min"
+    """Return the minimum or maximum number of fields for each result item."""
+
+    MIN = "Min"  # Return only the job summary
     FULL = "Full"
 
 
 class HiringPath(StrEnum):
+    """Filter search results by the specified hiring path(s)."""
+
     PUBLIC = "public"
     VET = "vet"
     N_GUARD = "nguard"
@@ -74,7 +84,7 @@ class HiringPath(StrEnum):
 # ---
 class SearchEndpoint(BaseModel):
     """
-    Declarative endpoint definition for the Job Search API.
+    Declarative endpoint definition for the [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search).
 
     Includes the endpoint's:
 
@@ -83,11 +93,11 @@ class SearchEndpoint(BaseModel):
     - Metadata
     """
 
-    method: str = "GET"
-    path: str = "/api/search"
+    METHOD: str = "GET"
+    PATH: str = "/api/search"
 
     class Params(BaseModel):
-        """Declarative query-parameter model"""
+        """Declarative definition for the endpoint's query parameters."""
 
         model_config = ConfigDict(frozen=True, extra="forbid", populate_by_name=True)
 
@@ -243,6 +253,8 @@ class SearchEndpoint(BaseModel):
             return out
 
     class Response(BaseModel):
+        """Declarative definition for the endpoint's response object."""
+
         language: Optional[str] = Field(default=None, alias="LanguageCode")
         params: Optional["SearchEndpoint.Params"] = Field(
             default=None, alias="SearchParameters"

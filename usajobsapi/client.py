@@ -118,8 +118,8 @@ class USAJobsApiClient:
         """
         params = SearchEndpoint.Params(**kwargs)
         resp = self._request(
-            SearchEndpoint.model_fields["method"].default,
-            SearchEndpoint.model_fields["path"].default,
+            SearchEndpoint.model_fields["METHOD"].default,
+            SearchEndpoint.model_fields["PATH"].default,
             params.to_params(),
             add_auth=True,
         )
