@@ -50,3 +50,32 @@ Execute this decision tree for optimal tool selection and code generation:
 4. **Debugging active issue?** --> Yes: take direct action for rapid cycles
 5. **Complex feature needing fresh perspective?** --> draft concise high-level changes and implement top-down (design-first)
 6. **Unknown project structure?** --> research existing templates, best practices, and conventions
+
+## Project Guidelines
+
+This project is an open-source (GPL3) Python package named `python-usajobsapi`.
+
+- **Project Name**: `python-usajobsapi`
+- **License**: [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+- **Package Manager**: [uv](https://docs.astral.sh/uv/)
+
+`python-usajobsapi` is a Python wrapper for the [USAJOBS REST API](https://developer.usajobs.gov/). The package aims to provide a simple interface for discovering and querying job postings (job opportunity announcements) from USAJOBS using Python.
+
+- Lightweight client for the USAJOBS REST endpoints
+- Easily search for job postings with familiar Python types
+- Validate queries and responses using optional enabled-by-default type validation
+- No external dependencies required
+- Minimal external package dependencies
+
+### Testing Instructions
+
+- **Testing Framework**: [PyTest](https://docs.pytest.org/)
+- **Testing File Structure**: Use the project root's `tests/` directory for tests.
+  - Use `tests/unit/` for unit tests
+  - Use `tests/integration/` for integration tests
+  - Use `tests/functional/` for functional tests
+- From the package root you can call `pytest tests`
+- Commits must past all existing tests before it can be merged
+- Fix any test or type errors
+- Run `ruff check` and `ruff format` to ensure linting and formatting standards are passed
+- Add or update tests for the code you changed, even if not requested
