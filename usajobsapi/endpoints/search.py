@@ -9,6 +9,8 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    ValidationError,
+    ValidationInfo,
     field_validator,
     model_validator,
 )
@@ -196,7 +198,9 @@ class SearchEndpoint(BaseModel):
 
         @field_validator("remuneration_max")
         @classmethod
-        def _check_min_le_max(cls, v, info):
+        def _check_min_le_max(
+            cls, v: Optional[int], info: ValidationInfo
+        ) -> Optional[int]:
             """Validate that renumeration max is >= renumeration min."""
             mn = info.data.get("remuneration_min")
             if v is not None and mn is not None and v < mn:
@@ -251,7 +255,7 @@ class SearchEndpoint(BaseModel):
                 descriptor = item.get("MatchedObjectDescriptor") or item
                 try:
                     out.append(SearchEndpoint.JobSummary.model_validate(descriptor))
-                except Exception:
+                except ValidationError:
                     continue
             return out
 
