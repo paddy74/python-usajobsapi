@@ -74,3 +74,20 @@ class TestSearchEndpointResponses:
         assert response.search_result is not None
         jobs = response.search_result.jobs()
         assert jobs[0].id == "1"
+
+    def test_response_jobs_helper(self, search_result_item):
+        response = SearchEndpoint.Response.model_validate(
+            {
+                "SearchResult": {
+                    "SearchResultCount": 1,
+                    "SearchResultCountAll": 1,
+                    "SearchResultItems": [search_result_item],
+                }
+            }
+        )
+        jobs = response.jobs()
+        assert len(jobs) == 1
+        assert jobs[0].id == "1"
+
+        empty_response = SearchEndpoint.Response.model_validate({})
+        assert empty_response.jobs() == []

@@ -270,3 +270,9 @@ class SearchEndpoint(BaseModel):
         search_result: Optional[SearchEndpoint.SearchResult] = Field(
             default=None, alias="SearchResult"
         )
+
+        def jobs(self) -> List[SearchEndpoint.JobSummary]:
+            """Helper method to directly expose parsed jobs in the response object."""
+            if not self.search_result:
+                return []
+            return self.search_result.jobs()
