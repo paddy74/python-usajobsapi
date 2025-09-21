@@ -26,12 +26,49 @@ def job_summary_payload():
     """Sample payload matching the API's job summary schema."""
     return {
         "MatchedObjectId": "1",
+        "PositionID": "24-123456",
         "PositionTitle": "Engineer",
         "OrganizationName": "NASA",
+        "DepartmentName": "National Aeronautics and Space Administration",
+        "PositionURI": "https://example.com/job/1",
+        "ApplyURI": ["https://example.com/apply/1"],
         "PositionLocationDisplay": "Houston, TX",
+        "PositionLocation": [
+            {
+                "LocationName": "Houston, Texas",
+                "LocationCode": "TX1234",
+                "CountryCode": "US",
+                "CountrySubDivisionCode": "TX",
+                "CityName": "Houston",
+                "Latitude": "29.7604",
+                "Longitude": "-95.3698",
+            }
+        ],
+        "JobCategory": [{"Code": "0801", "Name": "General Engineering"}],
+        "JobGrade": [{"Code": "GS", "CurrentGrade": "12"}],
+        "PositionSchedule": [{"Code": "1", "Name": "Full-time"}],
+        "PositionOfferingType": [{"Code": "15317", "Name": "Permanent"}],
         "MinimumRange": 50000.0,
         "MaximumRange": 100000.0,
+        "PositionRemuneration": [
+            {
+                "MinimumRange": "50000",
+                "MaximumRange": "100000",
+                "RateIntervalCode": "PA",
+                "Description": "Per Year",
+            }
+        ],
         "ApplicationCloseDate": "2024-01-01",
+        "UserArea": {
+            "Details": {
+                "JobSummary": "Design and build spacecraft components.",
+                "HiringPath": "public;vet",
+                "WhoMayApply": {
+                    "Name": "Open to the public",
+                    "Code": "public",
+                },
+            }
+        },
     }
 
 

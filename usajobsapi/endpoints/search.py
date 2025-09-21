@@ -216,20 +216,188 @@ class SearchEndpoint(BaseModel):
     # Response shapes
     # ---
 
+    class JobCategory(BaseModel):
+        """Represents a job series classification associated with a posting."""
+
+        code: Optional[str] = Field(default=None, alias="Code")
+        name: Optional[str] = Field(default=None, alias="Name")
+
+    class JobGrade(BaseModel):
+        """Represents the job grade (e.g. GS) tied to the posting."""
+
+        code: Optional[str] = Field(default=None, alias="Code")
+        current_grade: Optional[str] = Field(default=None, alias="CurrentGrade")
+
+    class PositionSchedule(BaseModel):
+        """Represents the work schedule for the position."""
+
+        code: Optional[str] = Field(default=None, alias="Code")
+        name: Optional[str] = Field(default=None, alias="Name")
+
+    class PositionOfferingType(BaseModel):
+        """Represents the appointment type (e.g. permanent, term)."""
+
+        code: Optional[str] = Field(default=None, alias="Code")
+        name: Optional[str] = Field(default=None, alias="Name")
+
+    class PositionRemuneration(BaseModel):
+        """Represents a salary range entry for the position."""
+
+        minimum: Optional[float] = Field(default=None, alias="MinimumRange")
+        maximum: Optional[float] = Field(default=None, alias="MaximumRange")
+        rate_interval_code: Optional[str] = Field(
+            default=None, alias="RateIntervalCode"
+        )
+        description: Optional[str] = Field(default=None, alias="Description")
+
+        @field_validator("minimum", "maximum", mode="before")
+        @classmethod
+        def _normalize_amount(cls, value: Any) -> Optional[float]:
+            """Normalize remuneration amounts to floats."""
+
+            if value in (None, ""):
+                return None
+            if isinstance(value, (int, float)):
+                return float(value)
+            if isinstance(value, str):
+                cleaned = value.replace(",", "").replace("$", "").strip()
+                if not cleaned:
+                    return None
+                try:
+                    return float(cleaned)
+                except ValueError:
+                    return None
+            return None
+
+    class JobLocation(BaseModel):
+        """Represents a structured job location entry."""
+
+        name: Optional[str] = Field(default=None, alias="LocationName")
+        code: Optional[str] = Field(default=None, alias="LocationCode")
+        country_code: Optional[str] = Field(default=None, alias="CountryCode")
+        state_code: Optional[str] = Field(default=None, alias="CountrySubDivisionCode")
+        city_name: Optional[str] = Field(default=None, alias="CityName")
+        latitude: Optional[float] = Field(default=None, alias="Latitude")
+        longitude: Optional[float] = Field(default=None, alias="Longitude")
+
+        @field_validator("latitude", "longitude", mode="before")
+        @classmethod
+        def _normalize_coordinate(cls, value: Any) -> Optional[float]:
+            """Normalize coordinate values to floats."""
+
+            if value in (None, ""):
+                return None
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return None
+
+    class WhoMayApplyInfo(BaseModel):
+        """Represents the structured WhoMayApply block."""
+
+        name: Optional[str] = Field(default=None, alias="Name")
+        code: Optional[str] = Field(default=None, alias="Code")
+
+    class UserAreaDetails(BaseModel):
+        """Represents metadata stored under the UserArea.Details field."""
+
+        job_summary: Optional[str] = Field(default=None, alias="JobSummary")
+        hiring_path: Optional[str] = Field(default=None, alias="HiringPath")
+        who_may_apply: Optional[SearchEndpoint.WhoMayApplyInfo] = Field(
+            default=None, alias="WhoMayApply"
+        )
+
+    class UserArea(BaseModel):
+        """Wrapper for additional USAJOBS metadata."""
+
+        details: Optional[SearchEndpoint.UserAreaDetails] = Field(
+            default=None, alias="Details"
+        )
+
     class JobSummary(BaseModel):
         """Normalized representation of a search result item."""
 
         id: str = Field(alias="MatchedObjectId")
+        position_id: Optional[str] = Field(default=None, alias="PositionID")
         position_title: str = Field(alias="PositionTitle")
+        position_uri: Optional[str] = Field(default=None, alias="PositionURI")
+        # URI to apply for the job offering
+        apply_uri: List[str] = Field(default_factory=list, alias="ApplyURI")
         organization_name: Optional[str] = Field(default=None, alias="OrganizationName")
+        department_name: Optional[str] = Field(default=None, alias="DepartmentName")
         locations_display: Optional[str] = Field(
             default=None, alias="PositionLocationDisplay"
         )
+        locations: List[SearchEndpoint.JobLocation] = Field(
+            default_factory=list, alias="PositionLocation"
+        )
+        job_categories: List[SearchEndpoint.JobCategory] = Field(
+            default_factory=list, alias="JobCategory"
+        )
+        job_grades: List[SearchEndpoint.JobGrade] = Field(
+            default_factory=list, alias="JobGrade"
+        )
+        position_schedules: List[SearchEndpoint.PositionSchedule] = Field(
+            default_factory=list, alias="PositionSchedule"
+        )
+        position_offerings: List[SearchEndpoint.PositionOfferingType] = Field(
+            default_factory=list, alias="PositionOfferingType"
+        )
+        user_area: Optional[SearchEndpoint.UserArea] = Field(
+            default=None, alias="UserArea"
+        )
+        qualification_summary: Optional[str] = Field(
+            default=None, alias="QualificationSummary"
+        )
         min_salary: Optional[float] = Field(default=None, alias="MinimumRange")
         max_salary: Optional[float] = Field(default=None, alias="MaximumRange")
+        position_remuneration: List[SearchEndpoint.PositionRemuneration] = Field(
+            default_factory=list, alias="PositionRemuneration"
+        )
+        publication_start_date: Optional[str] = Field(
+            default=None, alias="PublicationStartDate"
+        )
         application_close_date: Optional[str] = Field(
             default=None, alias="ApplicationCloseDate"
         )
+
+        def summary(self) -> Optional[str]:
+            """Helper method returning the most descriptive summary for the job."""
+
+            if self.user_area and self.user_area.details:
+                details = self.user_area.details
+                if details and details.job_summary:
+                    return details.job_summary
+            return self.qualification_summary
+
+        def salary_range(self) -> tuple[Optional[float], Optional[float]]:
+            """Helper method returning the salary range inferred from remuneration metadata."""
+
+            if self.position_remuneration:
+                minima = [
+                    r.minimum
+                    for r in self.position_remuneration
+                    if r.minimum is not None
+                ]
+                maxima = [
+                    r.maximum
+                    for r in self.position_remuneration
+                    if r.maximum is not None
+                ]
+                min_val = min(minima) if minima else None
+                max_val = max(maxima) if maxima else None
+                if min_val is not None or max_val is not None:
+                    return min_val, max_val
+            return self.min_salary, self.max_salary
+
+        def hiring_paths(self) -> List[str]:
+            """Helper method returning normalized hiring path codes from the user area."""
+
+            if self.user_area and self.user_area.details:
+                raw = self.user_area.details.hiring_path
+                if raw:
+                    return [path.strip() for path in raw.split(";") if path.strip()]
+            return []
 
     class SearchResult(BaseModel):
         """Model of paginated search results."""

@@ -35,6 +35,38 @@ class TestSearchEndpointParams:
 
 
 class TestSearchEndpointResponses:
+    def test_job_summary_parses_nested_fields(self, job_summary_payload):
+        summary = SearchEndpoint.JobSummary.model_validate(job_summary_payload)
+
+        assert summary.position_id == "24-123456"
+        assert summary.position_uri == "https://example.com/job/1"
+        assert summary.apply_uri == ["https://example.com/apply/1"]
+        assert (
+            summary.department_name == "National Aeronautics and Space Administration"
+        )
+        assert summary.locations_display == "Houston, TX"
+
+        assert len(summary.locations) == 1
+        location = summary.locations[0]
+        assert location.city_name == "Houston"
+        assert location.state_code == "TX"
+        assert location.latitude == pytest.approx(29.7604)
+        assert location.longitude == pytest.approx(-95.3698)
+
+        assert summary.job_categories[0].code == "0801"
+        assert summary.job_grades[0].current_grade == "12"
+        assert summary.position_schedules[0].name == "Full-time"
+        assert summary.position_offerings[0].code == "15317"
+
+        assert summary.salary_range() == (50000.0, 100000.0)
+        assert summary.hiring_paths() == ["public", "vet"]
+        assert summary.summary() == "Design and build spacecraft components."
+
+        assert summary.user_area
+        assert summary.user_area.details
+        assert summary.user_area.details.who_may_apply
+        assert summary.user_area.details.who_may_apply.name == "Open to the public"
+
     def test_search_result_jobs_parsing(self, search_result_item):
         items = [
             search_result_item,
