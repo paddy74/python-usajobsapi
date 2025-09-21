@@ -95,7 +95,7 @@ class USAJobsApiClient:
         resp.raise_for_status()
         return resp
 
-    def accouncement_text(self, **kwargs) -> AnnouncementTextEndpoint.Response:
+    def announcement_text(self, **kwargs) -> AnnouncementTextEndpoint.Response:
         """Query the Announcement Text API.
 
         :return: _description_
