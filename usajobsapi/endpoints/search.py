@@ -86,20 +86,14 @@ class HiringPath(StrEnum):
 # ---
 class SearchEndpoint(BaseModel):
     """
-    Declarative endpoint definition for the [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search).
-
-    Includes the endpoint's:
-
-    - Parameters
-    - Response shapes
-    - Metadata
+    Declarative wrapper around the [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search).
     """
 
     METHOD: str = "GET"
     PATH: str = "/api/search"
 
     class Params(BaseModel):
-        """Declarative definition for the endpoint's query parameters."""
+        """Declarative definition of the endpoint's query parameters."""
 
         model_config = ConfigDict(frozen=True, extra="forbid", populate_by_name=True)
 
@@ -195,6 +189,7 @@ class SearchEndpoint(BaseModel):
 
         @model_validator(mode="after")
         def _radius_requires_location(self) -> "SearchEndpoint.Params":
+            """Only use radius filters when a locaiton is provided."""
             if self.radius is not None and not self.location_names:
                 raise ValueError("Radius requires at least one LocationName.")
             return self
@@ -202,6 +197,7 @@ class SearchEndpoint(BaseModel):
         @field_validator("remuneration_max")
         @classmethod
         def _check_min_le_max(cls, v, info):
+            """Validate that renumeration max is >= renumeration min."""
             mn = info.data.get("remuneration_min")
             if v is not None and mn is not None and v < mn:
                 raise ValueError(
@@ -210,12 +206,15 @@ class SearchEndpoint(BaseModel):
             return v
 
         def to_params(self) -> Dict[str, str]:
+            """Return the serialized query-parameter dictionary."""
             return _dump_by_alias(self)
 
     # Response shapes
     # ---
 
     class JobSummary(BaseModel):
+        """Normalized representation of a search result item."""
+
         id: str = Field(alias="MatchedObjectId")
         position_title: str = Field(alias="PositionTitle")
         organization_name: Optional[str] = Field(default=None, alias="OrganizationName")
@@ -229,6 +228,8 @@ class SearchEndpoint(BaseModel):
         )
 
     class SearchResult(BaseModel):
+        """Model of paginated search results."""
+
         result_count: Optional[int] = Field(
             default=None,
             alias="SearchResultCount",
@@ -243,7 +244,7 @@ class SearchEndpoint(BaseModel):
         )
 
         def jobs(self) -> List[SearchEndpoint.JobSummary]:
-            # Convert to a normalized list versus keeping raw
+            """Normalize the list of search results, skiping malformed payloads."""
             out: List[SearchEndpoint.JobSummary] = []
             for item in self.items:
                 # Some responses nest the item under 'MatchedObjectDescriptor'
@@ -255,7 +256,7 @@ class SearchEndpoint(BaseModel):
             return out
 
     class Response(BaseModel):
-        """Declarative definition for the endpoint's response object."""
+        """Declarative definition of the endpoint's response object."""
 
         language: Optional[str] = Field(default=None, alias="LanguageCode")
         params: Optional[SearchEndpoint.Params] = Field(
