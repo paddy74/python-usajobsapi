@@ -1,3 +1,6 @@
+"""Helper utility functions."""
+
+from enum import Enum
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel
@@ -17,10 +20,22 @@ def _normalize_param(value: Any) -> Optional[str]:
     if isinstance(value, bool):
         # bools -> 'True'/'False'
         return "True" if value else "False"
+    if isinstance(value, Enum):
+        # enums -> use the serialized value
+        return str(value.value)
     if isinstance(value, list):
         # lists -> ';'
-        # Skip empty lists
-        return ";".join(map(str, value)) if value else None
+        if not value:
+            return None
+        normalized_items = []
+        for item in value:
+            if isinstance(item, bool):
+                normalized_items.append("True" if item else "False")
+            elif isinstance(item, Enum):
+                normalized_items.append(str(item.value))
+            else:
+                normalized_items.append(str(item))
+        return ";".join(normalized_items)
     # Everything else as a string
     return str(value)
 
