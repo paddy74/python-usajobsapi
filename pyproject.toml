@@ -39,6 +39,8 @@ build_command = """
 """
 version_variables = ["usajobsapi/_version.py:__version__"]
 commit_message = "chore: release v{version}"
+allow_zero_version = true
+major_on_zero = true
 
 [tool.ruff]
 line-length = 88
