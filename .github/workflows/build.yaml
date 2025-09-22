@@ -7,6 +7,8 @@ concurrency:
 on:
   pull_request_target:
     branches: [main] # PR verification only (base=main)
+  push:
+    branches: [main] # releases on merges to main
 
 jobs:
   # Build job for PR verification
@@ -25,3 +27,28 @@ jobs:
       - name: Build sdist and wheel
         run: uv build
       - uses: ./github/actions/python-post
+
+  # Publish releases on changes to main
+  release:
+    if: github.event_name != 'push' && github.ref == 'refs/heads/main' && github.repository == 'paddy74/python-usajobsapi'
+    name: Create a Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v10
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish pkg to GitHub Releases
+        uses: python-semantic-release/publish-action@10
+        if: steps.release.output.released == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
