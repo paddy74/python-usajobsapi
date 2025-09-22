@@ -30,11 +30,15 @@ jobs:
 
   # Publish releases on changes to main
   release:
-    if: github.event_name != 'push' && github.ref == 'refs/heads/main' && github.repository == 'paddy74/python-usajobsapi'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'paddy74/python-usajobsapi'
     name: Create a Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # tags + GitHub Release
+      id-token: write # PyPI Trusted Publishing
+    environment:
+      name: pypi
+      url: https://pypi.org/p/python-usajobsapi
 
     steps:
       - uses: actions/checkout@v5
@@ -52,3 +56,10 @@ jobs:
         if: steps.release.output.released == 'true'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish pkg to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.release.outputs.released == 'true'
+        with:
+          packages-dir: dist/
+          skip-existing: true
