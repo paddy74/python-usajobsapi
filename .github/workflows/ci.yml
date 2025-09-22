@@ -6,16 +6,22 @@ on:
     branches: ["main"]
 
 jobs:
-  lint-and-test:
+  lint:
+    name: Lint Python
     runs-on: ubuntu-latest
 
     steps:
       - uses: ./.github/actions/python-init
-
       - name: Run pre-commit
         run: uv run pre-commit run --all-files --hook-stage manual
+      - uses: ./.github/actions/python-post
 
+  test:
+    name: Test Python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: ./.github/actions/python-init
       - name: Run tests
         run: uv run pytest tests
-
       - uses: ./.github/actions/python-post
