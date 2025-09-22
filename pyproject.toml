@@ -17,6 +17,8 @@ dynamic = ["version"]
 [project.optional-dependencies]
 build = ["uv ~= 0.8.17"]
 
+[tool.hatch.version]
+path = "usajobsapi/_version.py"
 [tool.hatch.build.targets.wheel]
 packages = ["usajobsapi"]
 

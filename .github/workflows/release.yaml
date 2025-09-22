@@ -26,7 +26,7 @@ jobs:
       - uses: ./.github/actions/python-init
       - name: Build sdist and wheel
         run: uv build
-      - uses: ./github/actions/python-post
+      - uses: ./.github/actions/python-post
 
   # Publish releases on changes to main
   release:
