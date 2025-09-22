@@ -4,7 +4,6 @@ build-backend = "hatchling.build"
 
 [project]
 name = "python-usajobsapi"
-version = "0.1.0"
 description = "A Python wrapper for the USA Jobs REST API."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -13,7 +12,13 @@ dependencies = [
     "pydantic>=2.11.7",
     "requests>=2.32.5",
 ]
+dynamic = ["version"]
 
+[project.optional-dependencies]
+build = ["uv ~= 0.8.17"]
+
+[tool.hatch.version]
+path = "usajobsapi/_version.py"
 [tool.hatch.build.targets.wheel]
 packages = ["usajobsapi"]
 
@@ -24,9 +29,20 @@ dev = [
     "ruff>=0.12.11",
 ]
 
+[tool.semantic_release]
+branch = "main"
+build_command = """
+    python -m pip install -e '.[build]'
+    uv lock --upgrade-package "$PACKAGE_NAME"
+    git add uv.lock
+    uv build
+"""
+version_variables = ["usajobsapi/_version.py:__version__"]
+commit_message = "chore: release v{version}"
+
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py311"
 
 [tool.pytest.ini_options]
 addopts = "-q"

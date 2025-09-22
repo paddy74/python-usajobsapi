@@ -22,7 +22,13 @@ repos:
       - id: forbid-bidi-controls
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.11
+    rev: v0.13.1
     hooks:
-      - id: ruff
+      - id: ruff-check
+        name: ruff-check (local)
+        stages: [pre-commit, pre-push]
+      - id: ruff-check
+        name: ruff-check (ci)
+        stages: [manual]
+        args: [--output-format=github]
       - id: ruff-format
