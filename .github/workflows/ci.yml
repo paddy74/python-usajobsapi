@@ -13,7 +13,7 @@ jobs:
       - uses: ./.github/actions/python-init
 
       - name: Run pre-commit
-        run: uv run pre-commit run --all-files
+        run: uv run pre-commit run --all-files --hook-stage manual
 
       - name: Run tests
         run: uv run pytest tests
