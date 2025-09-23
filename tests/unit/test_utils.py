@@ -1,10 +1,11 @@
+import datetime as dt
 from enum import StrEnum
 from typing import Annotated, Any, List, Optional
 
 import pytest
 from pydantic import BaseModel, Field
 
-from usajobsapi.utils import _dump_by_alias, _normalize_param
+from usajobsapi.utils import _dump_by_alias, _normalize_date, _normalize_param
 
 # testing models
 # ---
@@ -31,6 +32,38 @@ class QueryModel(BaseModel):
     # outliers
     empty_list: List[str] = Field(default_factory=list, serialization_alias="F")
     none_field: Annotated[Optional[str], Field(serialization_alias="G")] = None
+
+
+# test _normalize_date
+# ---
+
+
+def test_normalize_date_accepts_datetime():
+    dt_value = dt.datetime(2024, 5, 17, 15, 30, 45)
+    assert _normalize_date(dt_value) == dt.date(2024, 5, 17)
+
+
+def test_normalize_date_accepts_date():
+    date_value = dt.date(2024, 5, 17)
+    assert _normalize_date(date_value) == dt.date(2024, 5, 17)
+
+
+def test_normalize_date_accepts_iso_string():
+    assert _normalize_date("2024-05-17") == dt.date(2024, 5, 17)
+
+
+def test_normalize_date_returns_none_for_none():
+    assert _normalize_date(None) is None
+
+
+def test_normalize_date_rejects_bad_string():
+    with pytest.raises(ValueError):
+        _normalize_date("05/17/2024")
+
+
+def test_normalize_date_rejects_non_date_inputs():
+    with pytest.raises(TypeError):
+        _normalize_date(123)
 
 
 # test _normalize_param

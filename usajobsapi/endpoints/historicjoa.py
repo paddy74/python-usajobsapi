@@ -1,10 +1,11 @@
 """Wrapper for the Historic JOAs API."""
 
+import datetime as dt
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from usajobsapi.utils import _dump_by_alias
+from usajobsapi.utils import _dump_by_alias, _normalize_date
 
 
 class HistoricJoaEndpoint(BaseModel):
@@ -35,17 +36,17 @@ class HistoricJoaEndpoint(BaseModel):
         usajobs_control_numbers: Optional[str] = Field(
             None, serialization_alias="USAJOBSControlNumbers"
         )
-        start_position_open_date: Optional[str] = Field(
-            None, serialization_alias="StartPositionOpenDate"
-        )  # YYYY-MM-DD
-        end_position_open_date: Optional[str] = Field(
-            None, serialization_alias="EndPositionOpenDate"
+        start_position_open_date: Optional[dt.date] = Field(
+            default=None, serialization_alias="StartPositionOpenDate"
         )
-        start_position_close_date: Optional[str] = Field(
-            None, serialization_alias="StartPositionCloseDate"
+        end_position_open_date: Optional[dt.date] = Field(
+            default=None, serialization_alias="EndPositionOpenDate"
         )
-        end_position_close_date: Optional[str] = Field(
-            None, serialization_alias="EndPositionCloseDate"
+        start_position_close_date: Optional[dt.date] = Field(
+            default=None, serialization_alias="StartPositionCloseDate"
+        )
+        end_position_close_date: Optional[dt.date] = Field(
+            default=None, serialization_alias="EndPositionCloseDate"
         )
         continuation_token: Optional[str] = Field(
             None, serialization_alias="continuationtoken"
@@ -54,6 +55,21 @@ class HistoricJoaEndpoint(BaseModel):
         def to_params(self) -> Dict[str, str]:
             """Serialize params into payload-ready query parameters."""
             return _dump_by_alias(self)
+
+        @field_validator(
+            "start_position_open_date",
+            "end_position_open_date",
+            "start_position_close_date",
+            "end_position_close_date",
+            mode="before",
+        )
+        @classmethod
+        def _normalize_date_fields(
+            cls, value: None | dt.datetime | dt.date | str
+        ) -> Optional[dt.date]:
+            """Coerce date-like inputs to `datetime.date`."""
+
+            return _normalize_date(value)
 
     # Response shapes
     # ---

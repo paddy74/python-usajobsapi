@@ -1,3 +1,9 @@
+"""Unit tests for HistoricJoaEndpoint."""
+
+import datetime as dt
+
+import pytest
+
 from usajobsapi.endpoints.historicjoa import HistoricJoaEndpoint
 
 
@@ -5,6 +11,11 @@ def test_params_to_params_serializes_aliases(historicjoa_params_kwargs) -> None:
     """Validate Params.to_params uses USAJOBS aliases and formatting."""
 
     params = HistoricJoaEndpoint.Params(**historicjoa_params_kwargs)
+
+    assert isinstance(params.start_position_open_date, dt.date)
+    assert isinstance(params.end_position_open_date, dt.date)
+    assert isinstance(params.start_position_close_date, dt.date)
+    assert isinstance(params.end_position_close_date, dt.date)
 
     serialized = params.to_params()
 
@@ -24,6 +35,45 @@ def test_params_to_params_serializes_aliases(historicjoa_params_kwargs) -> None:
     assert serialized == expected
 
 
+def test_params_to_params_accepts_datetime_for_start_open_date(
+    historicjoa_params_kwargs,
+) -> None:
+    """Ensure start_position_open_date accepts datetime instances."""
+
+    kwargs = historicjoa_params_kwargs.copy()
+    kwargs["start_position_open_date"] = dt.datetime(2020, 1, 1, 8, 30)
+
+    params = HistoricJoaEndpoint.Params(**kwargs)
+
+    assert isinstance(params.start_position_open_date, dt.date)
+
+    serialized = params.to_params()
+
+    assert serialized["StartPositionOpenDate"] == "2020-01-01"
+
+
+def test_params_to_params_rejects_time_for_start_open_date(
+    historicjoa_params_kwargs,
+) -> None:
+    """Ensure start_position_open_date rejects time-only values."""
+
+    kwargs = historicjoa_params_kwargs.copy()
+    kwargs["start_position_open_date"] = dt.time(8, 45, 15)
+
+    with pytest.raises(TypeError):
+        HistoricJoaEndpoint.Params(**kwargs)
+
+
+def test_params_to_params_rejects_bad_string_format(historicjoa_params_kwargs) -> None:
+    """Ensure invalid date strings are rejected with a ValueError."""
+
+    kwargs = historicjoa_params_kwargs.copy()
+    kwargs["start_position_open_date"] = "01-01-2020"
+
+    with pytest.raises(ValueError):
+        HistoricJoaEndpoint.Params(**kwargs)
+
+
 def test_params_to_params_omits_none_fields(historicjoa_params_kwargs) -> None:
     """Ensure Params.to_params excludes unset or None-valued fields."""
 
@@ -36,6 +86,10 @@ def test_params_to_params_omits_none_fields(historicjoa_params_kwargs) -> None:
         kwargs[optional] = None
 
     params = HistoricJoaEndpoint.Params(**kwargs)
+
+    assert params.start_position_open_date is None or isinstance(
+        params.start_position_open_date, dt.date
+    )
 
     serialized = params.to_params()
 
