@@ -1,28 +1,78 @@
+from usajobsapi.endpoints.historicjoa import HistoricJoaEndpoint
+
+
 def test_params_to_params_serializes_aliases(historicjoa_params_kwargs) -> None:
     """Validate Params.to_params uses USAJOBS aliases and formatting."""
 
-    pass
+    params = HistoricJoaEndpoint.Params(**historicjoa_params_kwargs)
+
+    serialized = params.to_params()
+
+    expected = {
+        "HiringAgencyCodes": "AGENCY1",
+        "HiringDepartmentCodes": "DEPT1",
+        "PositionSeries": "2210",
+        "AnnouncementNumbers": "23-ABC",
+        "USAJOBSControlNumbers": "1234567",
+        "StartPositionOpenDate": "2020-01-01",
+        "EndPositionOpenDate": "2020-12-31",
+        "StartPositionCloseDate": "2021-01-01",
+        "EndPositionCloseDate": "2021-12-31",
+        "continuationtoken": "token123",
+    }
+
+    assert serialized == expected
 
 
-def test_params_to_params_omits_none_fields() -> None:
+def test_params_to_params_omits_none_fields(historicjoa_params_kwargs) -> None:
     """Ensure Params.to_params excludes unset or None-valued fields."""
 
-    pass
+    kwargs = historicjoa_params_kwargs.copy()
+    for optional in (
+        "hiring_department_codes",
+        "announcement_numbers",
+        "continuation_token",
+    ):
+        kwargs[optional] = None
+
+    params = HistoricJoaEndpoint.Params(**kwargs)
+
+    serialized = params.to_params()
+
+    assert "HiringDepartmentCodes" not in serialized
+    assert "AnnouncementNumbers" not in serialized
+    assert "continuationtoken" not in serialized
+    assert serialized["HiringAgencyCodes"] == "AGENCY1"
 
 
 def test_item_model_parses_response_payload(historicjoa_response_payload) -> None:
     """Confirm Item model accepts serialized payload dictionaries."""
 
-    pass
+    payload = historicjoa_response_payload["data"][0]
+
+    item = HistoricJoaEndpoint.Item.model_validate(payload)
+
+    assert item.usajobs_control_number == 123456789
+    assert item.position_title == "Data Scientist"
+    assert item.hiring_agency_code == "NASA"
+    assert item.hiring_department_code == "NAT"
+    assert item.position_open_date == "2020-01-01"
+    assert item.position_close_date == "2020-02-01"
+    assert item.minimum_salary == 90000.0
+    assert item.maximum_salary == 120000.0
 
 
 def test_response_next_token_returns_continuation(historicjoa_response_payload) -> None:
     """Check Response.next_token surfaces continuation tokens from paging metadata."""
 
-    pass
+    response = HistoricJoaEndpoint.Response.model_validate(historicjoa_response_payload)
+
+    assert response.next_token() == "NEXTTOKEN"
 
 
 def test_response_next_token_when_paging_missing() -> None:
     """Validate Response.next_token returns None when paging metadata is absent."""
 
-    pass
+    response = HistoricJoaEndpoint.Response(data=[])
+
+    assert response.next_token() is None
