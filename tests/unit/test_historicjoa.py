@@ -114,8 +114,8 @@ def test_item_model_parses_response_payload(historicjoa_response_payload) -> Non
     assert item.agency_level == 2
     assert item.appointment_type == "Permanent"
     assert item.position_title == "Data Scientist"
-    assert item.position_open_date == "2020-01-01"
-    assert item.position_close_date == "2020-02-01"
+    assert item.position_open_date == dt.date(2020, 1, 1)
+    assert item.position_close_date == dt.date(2020, 2, 1)
     assert item.minimum_salary == 90000.0
     assert item.maximum_salary == 120000.0
     assert item.telework_eligible == "Y"

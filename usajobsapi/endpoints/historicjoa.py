@@ -132,13 +132,13 @@ class HistoricJoaEndpoint(BaseModel):
         announcement_closing_type_description: Optional[str] = Field(
             default=None, alias="announcementClosingTypeDescription"
         )
-        position_open_date: Optional[str] = Field(
+        position_open_date: Optional[dt.date] = Field(
             default=None, alias="positionOpenDate"
         )
-        position_close_date: Optional[str] = Field(
+        position_close_date: Optional[dt.date] = Field(
             default=None, alias="positionCloseDate"
         )
-        position_expire_date: Optional[str] = Field(
+        position_expire_date: Optional[dt.date] = Field(
             default=None, alias="positionExpireDate"
         )
         announcement_number: Optional[str] = Field(
