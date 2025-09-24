@@ -107,13 +107,29 @@ def test_item_model_parses_response_payload(historicjoa_response_payload) -> Non
     item = HistoricJoaEndpoint.Item.model_validate(payload)
 
     assert item.usajobs_control_number == 123456789
-    assert item.position_title == "Data Scientist"
     assert item.hiring_agency_code == "NASA"
+    assert item.hiring_agency_name == "National Aeronautics and Space Administration"
     assert item.hiring_department_code == "NAT"
+    assert item.hiring_department_name == "Department of Science"
+    assert item.agency_level == 2
+    assert item.appointment_type == "Permanent"
+    assert item.position_title == "Data Scientist"
     assert item.position_open_date == "2020-01-01"
     assert item.position_close_date == "2020-02-01"
     assert item.minimum_salary == 90000.0
     assert item.maximum_salary == 120000.0
+    assert item.telework_eligible == "Y"
+    assert item.security_clearance == "Secret"
+    assert item.disable_apply_online == "N"
+    assert len(item.hiring_paths) == 1
+    assert item.hiring_paths[0].hiring_path == "The public"
+    assert len(item.job_categories) == 1
+    assert item.job_categories[0].series == "1550"
+    assert len(item.position_locations) == 1
+    location = item.position_locations[0]
+    assert location.position_location_city == "Houston"
+    assert location.position_location_state == "Texas"
+    assert location.position_location_country == "United States"
 
 
 def test_response_next_token_returns_continuation(historicjoa_response_payload) -> None:

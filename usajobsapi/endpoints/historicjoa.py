@@ -77,13 +77,60 @@ class HistoricJoaEndpoint(BaseModel):
     class Item(BaseModel):
         """A single historic job opportunity announcement record."""
 
+        class HiringPath(BaseModel):
+            hiring_path: Optional[str] = Field(default=None, alias="hiringPath")
+
+        class JobCategory(BaseModel):
+            series: Optional[str] = Field(default=None, alias="series")
+
+        class PositionLocation(BaseModel):
+            position_location_city: Optional[str] = Field(
+                default=None, alias="positionLocationCity"
+            )
+            position_location_state: Optional[str] = Field(
+                default=None, alias="positionLocationState"
+            )
+            position_location_country: Optional[str] = Field(
+                default=None, alias="positionLocationCountry"
+            )
+
         usajobs_control_number: int = Field(alias="usajobsControlNumber")
-        position_title: Optional[str] = Field(default=None, alias="positionTitle")
         hiring_agency_code: Optional[str] = Field(
             default=None, alias="hiringAgencyCode"
         )
+        hiring_agency_name: Optional[str] = Field(
+            default=None, alias="hiringAgencyName"
+        )
         hiring_department_code: Optional[str] = Field(
             default=None, alias="hiringDepartmentCode"
+        )
+        hiring_department_name: Optional[str] = Field(
+            default=None, alias="hiringDepartmentName"
+        )
+        agency_level: Optional[int] = Field(default=None, alias="agencyLevel")
+        agency_level_sort: Optional[str] = Field(default=None, alias="agencyLevelSort")
+        appointment_type: Optional[str] = Field(default=None, alias="appointmentType")
+        work_schedule: Optional[str] = Field(default=None, alias="workSchedule")
+        pay_scale: Optional[str] = Field(default=None, alias="payScale")
+        salary_type: Optional[str] = Field(default=None, alias="salaryType")
+        vendor: Optional[str] = Field(default=None, alias="vendor")
+        travel_requirement: Optional[str] = Field(
+            default=None, alias="travelRequirement"
+        )
+        telework_eligible: Optional[str] = Field(default=None, alias="teleworkEligible")
+        service_type: Optional[str] = Field(default=None, alias="serviceType")
+        security_clearance_required: Optional[str] = Field(
+            default=None, alias="securityClearanceRequired"
+        )
+        security_clearance: Optional[str] = Field(
+            default=None, alias="securityClearance"
+        )
+        who_may_apply: Optional[str] = Field(default=None, alias="whoMayApply")
+        announcement_closing_type_code: Optional[str] = Field(
+            default=None, alias="announcementClosingTypeCode"
+        )
+        announcement_closing_type_description: Optional[str] = Field(
+            default=None, alias="announcementClosingTypeDescription"
         )
         position_open_date: Optional[str] = Field(
             default=None, alias="positionOpenDate"
@@ -91,8 +138,48 @@ class HistoricJoaEndpoint(BaseModel):
         position_close_date: Optional[str] = Field(
             default=None, alias="positionCloseDate"
         )
+        position_expire_date: Optional[str] = Field(
+            default=None, alias="positionExpireDate"
+        )
+        announcement_number: Optional[str] = Field(
+            default=None, alias="announcementNumber"
+        )
+        hiring_subelement_name: Optional[str] = Field(
+            default=None, alias="hiringSubelementName"
+        )
+        position_title: Optional[str] = Field(default=None, alias="positionTitle")
+        minimum_grade: Optional[str] = Field(default=None, alias="minimumGrade")
+        maximum_grade: Optional[str] = Field(default=None, alias="maximumGrade")
+        promotion_potential: Optional[str] = Field(
+            default=None, alias="promotionPotential"
+        )
         minimum_salary: Optional[float] = Field(default=None, alias="minimumSalary")
         maximum_salary: Optional[float] = Field(default=None, alias="maximumSalary")
+        supervisory_status: Optional[str] = Field(
+            default=None, alias="supervisoryStatus"
+        )
+        drug_test_required: Optional[str] = Field(
+            default=None, alias="drugTestRequired"
+        )
+        relocation_expenses_reimbursed: Optional[str] = Field(
+            default=None, alias="relocationExpensesReimbursed"
+        )
+        total_openings: Optional[str] = Field(default=None, alias="totalOpenings")
+        disable_apply_online: Optional[str] = Field(
+            default=None, alias="disableAppyOnline"
+        )
+        position_opening_status: Optional[str] = Field(
+            default=None, alias="positionOpeningStatus"
+        )
+        hiring_paths: List["HistoricJoaEndpoint.Item.HiringPath"] = Field(
+            default_factory=list, alias="hiringPaths"
+        )
+        job_categories: List["HistoricJoaEndpoint.Item.JobCategory"] = Field(
+            default_factory=list, alias="jobCategories"
+        )
+        position_locations: List["HistoricJoaEndpoint.Item.PositionLocation"] = Field(
+            default_factory=list, alias="positionLocations"
+        )
 
     class PagingMeta(BaseModel):
         """Pagination metadata returned alongside Historic JOA results."""
