@@ -5,7 +5,12 @@ from typing import Annotated, Any, List, Optional
 import pytest
 from pydantic import BaseModel, Field
 
-from usajobsapi.utils import _dump_by_alias, _normalize_date, _normalize_param
+from usajobsapi.utils import (
+    _dump_by_alias,
+    _normalize_date,
+    _normalize_param,
+    _normalize_yn_bool,
+)
 
 # testing models
 # ---
@@ -63,7 +68,37 @@ def test_normalize_date_rejects_bad_string():
 
 def test_normalize_date_rejects_non_date_inputs():
     with pytest.raises(TypeError):
-        _normalize_date(123)
+        _normalize_date(123)  # pyright: ignore[reportArgumentType]
+
+
+# test _normalize_yn_bool
+
+
+def test_normalize_bool_accepts_bool():
+    assert _normalize_yn_bool(True)
+
+
+def test_normalize_bool_accepts_string():
+    assert _normalize_yn_bool("Y")
+    assert _normalize_yn_bool("YES")
+    assert _normalize_yn_bool("TRUE")
+    assert not _normalize_yn_bool("N")
+    assert not _normalize_yn_bool("NO")
+    assert not _normalize_yn_bool("FALSE")
+
+
+def test_normalize_bool_returns_none_for_none():
+    assert _normalize_yn_bool(None) is None
+
+
+def test_normalize_bool_rejects_bad_string():
+    with pytest.raises(ValueError):
+        _normalize_yn_bool("indubitably")
+
+
+def test_normalize_bool_rejects_non_bool_inputs():
+    with pytest.raises(TypeError):
+        _normalize_yn_bool(123)  # pyright: ignore[reportArgumentType]
 
 
 # test _normalize_param

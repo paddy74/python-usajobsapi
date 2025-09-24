@@ -26,6 +26,23 @@ def _normalize_date(value: None | dt.datetime | dt.date | str) -> Optional[dt.da
     raise TypeError(msg)
 
 
+def _normalize_yn_bool(value: None | bool | str) -> Optional[bool]:
+    """Normalize "Y"/"N" to `bool`."""
+
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().upper()
+        if normalized in {"Y", "YES", "TRUE", "1"}:
+            return True
+        if normalized in {"N", "NO", "FALSE", "0"}:
+            return False
+        raise ValueError("Value must be a Y/YES/TRUE/1 or N/NO/FALSE/0 string")
+    raise TypeError("Expected value type of bool or Y/N string")
+
+
 def _normalize_param(value: Any) -> Optional[str]:
     """Normalize query parameters to the format expected by USAJOBS.
 

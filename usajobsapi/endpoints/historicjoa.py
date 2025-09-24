@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from usajobsapi.utils import _dump_by_alias, _normalize_date
+from usajobsapi.utils import _dump_by_alias, _normalize_date, _normalize_yn_bool
 
 
 class HistoricJoaEndpoint(BaseModel):
@@ -117,9 +117,11 @@ class HistoricJoaEndpoint(BaseModel):
         travel_requirement: Optional[str] = Field(
             default=None, alias="travelRequirement"
         )
-        telework_eligible: Optional[str] = Field(default=None, alias="teleworkEligible")
+        telework_eligible: Optional[bool] = Field(
+            default=None, alias="teleworkEligible"
+        )
         service_type: Optional[str] = Field(default=None, alias="serviceType")
-        security_clearance_required: Optional[str] = Field(
+        security_clearance_required: Optional[bool] = Field(
             default=None, alias="securityClearanceRequired"
         )
         security_clearance: Optional[str] = Field(
@@ -155,18 +157,18 @@ class HistoricJoaEndpoint(BaseModel):
         )
         minimum_salary: Optional[float] = Field(default=None, alias="minimumSalary")
         maximum_salary: Optional[float] = Field(default=None, alias="maximumSalary")
-        supervisory_status: Optional[str] = Field(
+        supervisory_status: Optional[bool] = Field(
             default=None, alias="supervisoryStatus"
         )
-        drug_test_required: Optional[str] = Field(
+        drug_test_required: Optional[bool] = Field(
             default=None, alias="drugTestRequired"
         )
-        relocation_expenses_reimbursed: Optional[str] = Field(
+        relocation_expenses_reimbursed: Optional[bool] = Field(
             default=None, alias="relocationExpensesReimbursed"
         )
         total_openings: Optional[str] = Field(default=None, alias="totalOpenings")
-        disable_apply_online: Optional[str] = Field(
-            default=None, alias="disableAppyOnline"
+        disable_apply_online: Optional[bool] = Field(
+            default=None, alias="disableApplyOnline"
         )
         position_opening_status: Optional[str] = Field(
             default=None, alias="positionOpeningStatus"
@@ -180,6 +182,21 @@ class HistoricJoaEndpoint(BaseModel):
         position_locations: List["HistoricJoaEndpoint.Item.PositionLocation"] = Field(
             default_factory=list, alias="positionLocations"
         )
+
+        @field_validator(
+            "telework_eligible",
+            "security_clearance_required",
+            "supervisory_status",
+            "drug_test_required",
+            "relocation_expenses_reimbursed",
+            "disable_apply_online",
+            mode="before",
+        )
+        @classmethod
+        def _normalize_yn_boolean(cls, value: None | bool | str) -> Optional[bool]:
+            """Coerce bool-like outputs to `bool`."""
+
+            return _normalize_yn_bool(value)
 
     class PagingMeta(BaseModel):
         """Pagination metadata returned alongside Historic JOA results."""

@@ -118,9 +118,13 @@ def test_item_model_parses_response_payload(historicjoa_response_payload) -> Non
     assert item.position_close_date == dt.date(2020, 2, 1)
     assert item.minimum_salary == 90000.0
     assert item.maximum_salary == 120000.0
-    assert item.telework_eligible == "Y"
+    assert item.telework_eligible is True
+    assert item.security_clearance_required is True
     assert item.security_clearance == "Secret"
-    assert item.disable_apply_online == "N"
+    assert item.supervisory_status is False
+    assert item.drug_test_required is False
+    assert item.relocation_expenses_reimbursed is True
+    assert item.disable_apply_online is False
     assert len(item.hiring_paths) == 1
     assert item.hiring_paths[0].hiring_path == "The public"
     assert len(item.job_categories) == 1
