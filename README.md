@@ -1,6 +1,13 @@
 # python-usajobsapi
 
-A Python wrapper for the [USAJOBS REST API](https://developer.usajobs.gov/). The package aims to provide a simple SDK interface for discovering and querying job postings from USAJOBS using Python.
+[![PyPI][pypi-img]][pypi-lnk]
+[![License][license-img]][license-lnk]
+[![Tests][tests-img]][tests-lnk]
+[![Python][python-img]][python-lnk]
+[![Code Style][codestyle-img]][codestyle-lnk]
+[![Coverage Status][codecov-img]][codecov-lnk]
+
+A Python wrapper for the [USAJOBS REST API](https://developer.usajobs.gov/). The library aims to provide a simple interface for discovering and querying job postings from USAJOBS using Python.
 
 ## Features
 
@@ -73,3 +80,18 @@ This project is under active development and its API may change. Changes to the 
 ## Contact
 
 Questions or issues? Please open an issue on the repository's issue tracker.
+
+<!-- Badges -->
+
+[pypi-lnk]: https://pypi.org/p/python-usajobsapi
+[pypi-img]: https://img.shields.io/pypi/v/python-usajobsapi.svg
+[tests-lnk]: https://github.com/paddy74/python-usajobsapi/actions
+[tests-img]: https://img.shields.io/github/actions/workflow/status/paddy74/python-usajobsapi/ci.yaml?logo=github&label=tests&branch=master
+[codecov-lnk]: https://app.codecov.io/gh/paddy74/python-usajobsapi
+[codecov-img]: https://app.codecov.io/gh/paddy74/python-usajobsapi/coverage.svg
+[python-lnk]: https://img.shields.io/pypi/pyversions/python-usajobsapi.svg
+[python-img]: https://pypi.python.org/pypi/python-usajobsapi
+[codestyle-lnk]: https://docs.astral.sh/ruff
+[codestyle-img]: https://img.shields.io/badge/code%20style-ruff-000000.svg
+[license-lnk]: ./LICENSE
+[license-img]: https://img.shields.io/pypi/l/python-usajobsapi?color=light-green&logo=gplv3&logoColor=white
