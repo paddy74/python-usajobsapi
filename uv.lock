@@ -264,7 +264,7 @@ wheels = [
 
 [[package]]
 name = "mkdocs-external-files"
-version = "0.0.2"
+version = "0.0.3"
 source = { directory = "mkdocs/mkdocs_external_files" }
 dependencies = [
     { name = "mkdocs" },

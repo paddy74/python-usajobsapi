@@ -1,25 +1,16 @@
 # plugins/external_files.py
-import hashlib
 import logging
-import shutil
 from glob import glob
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Callable
 
 from mkdocs.config import config_options as c
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.livereload import LiveReloadServer
 from mkdocs.plugins import BasePlugin
+from mkdocs.structure.files import File, Files
 
 logger = logging.getLogger(__name__)
-
-
-def _sha256(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 16), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 class ExternalFilesPlugin(BasePlugin):
@@ -56,27 +47,17 @@ class ExternalFilesPlugin(BasePlugin):
 
         return config
 
-    def _copy_file(self, src: Path, dest: Path):
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        if dest.exists():
-            try:
-                if _sha256(src) == _sha256(dest):
-                    logger.debug("external-files: skip identical %s", dest)
-                    return  # identical; skip
-            except Exception:
-                pass
-        logger.debug("external-files: copy %s -> %s", src, dest)
-        shutil.copy2(src, dest)
-
     def _expand_items(self):
         """
-        Yields (src_path, dest_path) pairs. Supports:
+        Yields (src_path, dest_uri) pairs. Supports:
           - single file -> file
           - glob -> directory (dest must end with '/')
         """
         for item in self.config["files"]:
             src = item["src"]
             dest = item["dest"]
+            if Path(dest).is_absolute():
+                raise ValueError(f"external-files: dest must be relative, got {dest!r}")
             if any(ch in src for ch in ["*", "?", "["]):
                 # glob mode: dest must be a directory (end with '/')
                 if not dest.endswith(("/", "\\")):
@@ -90,23 +71,36 @@ class ExternalFilesPlugin(BasePlugin):
                 for s in matched:
                     if s.is_file():
                         rel_name = s.name
-                        yield s, (self.docs_dir / dest / rel_name).resolve()
+                        dest_uri = PurePosixPath(dest.rstrip("/\\")) / rel_name
+                        yield s, dest_uri.as_posix()
             else:
                 s = Path(src)
                 if not s.is_absolute():
                     s = self.config_dir / s
                 s = s.resolve()
-                d = (self.docs_dir / dest).resolve()
-                yield s, d
+                dest_uri = PurePosixPath(dest.replace("\\", "/")).as_posix()
+                yield s, dest_uri
 
-    def on_pre_build(self, *, config: MkDocsConfig) -> None:
-        copied = 0
-        for src, dest in self._expand_items():
+    def on_files(self, files: Files, *, config: MkDocsConfig) -> Files:
+        staged = 0
+        for src, dest_uri in self._expand_items():
             if not src.exists():
                 raise FileNotFoundError(f"external-files: source not found: {src}")
-            self._copy_file(src, dest)
-            copied += 1
-        logger.debug("external-files: staged %s file(s) into %s", copied, self.docs_dir)
+
+            existing = files.get_file_from_path(dest_uri)
+            if existing is not None:
+                files.remove(existing)
+
+            generated = File.generated(config, dest_uri, abs_src_path=str(src))
+            files.append(generated)
+            staged += 1
+
+        logger.debug(
+            "external-files: staged %s file(s) for build into %s",
+            staged,
+            config.site_dir,
+        )
+        return files
 
     # Make mkdocs serve auto-reload when source files change
     def on_serve(
