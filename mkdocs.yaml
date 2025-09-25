@@ -1,0 +1,14 @@
+site_name: python-usajobsapi
+site_url: https://python-usajobsapi.github.io/
+site_description: Project documentation for python-usajobsapi
+
+repo_url: https://github.com/paddy74/python-usajobsapi/
+edit_uri: blob/master/docs/
+
+theme:
+  name: readthedocs
+  locale: en
+  highlightjs: true
+
+nav:
+  - Home: index.md
