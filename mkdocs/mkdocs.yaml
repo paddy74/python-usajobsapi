@@ -14,6 +14,9 @@ theme:
 
 nav:
   - Home: index.md
+  - About:
+      - Changelog: about/changelog.md
+      - License: about/license.md
 
 plugins:
   - search
@@ -21,6 +24,10 @@ plugins:
       files:
         - src: ../README.md
           dest: README.md
+        - src: ../CHANGELOG.md
+          dest: about/changelog.md
+        - src: ../LICENSE
+          dest: about/license.md
 
 markdown_extensions:
   - toc:
