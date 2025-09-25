@@ -263,6 +263,17 @@ wheels = [
 ]
 
 [[package]]
+name = "mkdocs-external-files"
+version = "0.0.2"
+source = { directory = "mkdocs/mkdocs_external_files" }
+dependencies = [
+    { name = "mkdocs" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "mkdocs", specifier = ">=1.6.1" }]
+
+[[package]]
 name = "mkdocs-get-deps"
 version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -470,6 +481,7 @@ build = [
 [package.dev-dependencies]
 dev = [
     { name = "mkdocs" },
+    { name = "mkdocs-external-files" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "ruff" },
@@ -486,6 +498,7 @@ provides-extras = ["build"]
 [package.metadata.requires-dev]
 dev = [
     { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-external-files", directory = "mkdocs/mkdocs_external_files" },
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "ruff", specifier = ">=0.12.11" },

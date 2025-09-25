@@ -17,6 +17,9 @@ dynamic = ["version"]
 [project.optional-dependencies]
 build = ["uv ~= 0.8.17"]
 
+[tool.uv.sources]
+mkdocs_external_files = { path = "mkdocs/mkdocs_external_files" }
+
 [tool.hatch.version]
 path = "usajobsapi/_version.py"
 [tool.hatch.build.targets.wheel]
@@ -24,6 +27,7 @@ packages = ["usajobsapi"]
 
 [dependency-groups]
 dev = [
+    "mkdocs-external-files",
     "mkdocs>=1.6.1",
     "pre-commit>=4.3.0",
     "pytest>=8.4.1",
