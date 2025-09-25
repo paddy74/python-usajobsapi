@@ -12,3 +12,9 @@ theme:
 
 nav:
   - Home: index.md
+
+hooks:
+  - docs/hooks.py
+
+watch:
+  - usajobsapi/_version.py
