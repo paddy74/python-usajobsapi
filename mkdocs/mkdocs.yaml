@@ -15,6 +15,13 @@ theme:
 nav:
   - Home: index.md
 
+plugins:
+  - search
+  - external-files:
+      files:
+        - src: ../README.md
+          dest: external/README.md
+
 markdown_extensions:
   - toc:
       baselevel: 2
