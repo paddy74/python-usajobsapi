@@ -20,7 +20,7 @@ plugins:
   - external-files:
       files:
         - src: ../README.md
-          dest: external/README.md
+          dest: README.md
 
 markdown_extensions:
   - toc:
