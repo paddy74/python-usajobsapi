@@ -2,6 +2,8 @@ site_name: python-usajobsapi
 site_url: https://python-usajobsapi.github.io/
 site_description: Project documentation for python-usajobsapi
 
+site_dir: ../site
+
 repo_url: https://github.com/paddy74/python-usajobsapi/
 edit_uri: blob/master/docs/
 
@@ -13,8 +15,12 @@ theme:
 nav:
   - Home: index.md
 
+markdown_extensions:
+  - toc:
+      baselevel: 2
+
 hooks:
-  - docs/hooks.py
+  - hooks.py
 
 watch:
-  - usajobsapi/_version.py
+  - ../usajobsapi/_version.py
