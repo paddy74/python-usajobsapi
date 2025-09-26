@@ -13,7 +13,7 @@ from usajobsapi.endpoints import (
 )
 
 
-class USAJobsApiClient:
+class USAJobsClient:
     """Represents a client connection to the USAJOBS REST API."""
 
     def __init__(
@@ -110,16 +110,16 @@ class USAJobsApiClient:
         )
         return AnnouncementTextEndpoint.Response.model_validate(resp.json())
 
-    def job_search(self, **kwargs) -> SearchEndpoint.Response:
-        """Query the Job Search API.
+    def search_jobs(self, **kwargs) -> SearchEndpoint.Response:
+        """Query the [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search).
 
-        :return: _description_
+        :return: Active job listings matching the search criteria.
         :rtype: SearchEndpoint.Response
         """
         params = SearchEndpoint.Params(**kwargs)
         resp = self._request(
-            SearchEndpoint.model_fields["method"].default,
-            SearchEndpoint.model_fields["path"].default,
+            SearchEndpoint.model_fields["METHOD"].default,
+            SearchEndpoint.model_fields["PATH"].default,
             params.to_params(),
             add_auth=True,
         )

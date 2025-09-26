@@ -1,10 +1,10 @@
-"""Unit tests for USAJobsApiClient."""
+"""Unit tests for USAJobsClient."""
 
 from copy import deepcopy
 
 import pytest
 
-from usajobsapi.client import USAJobsApiClient
+from usajobsapi.client import USAJobsClient
 from usajobsapi.endpoints.historicjoa import HistoricJoaEndpoint
 
 # test historic_joa_pages
@@ -31,9 +31,9 @@ def test_historic_joa_pages_yields_pages(
         captured_kwargs.append(call_kwargs)
         return responses.pop(0)
 
-    monkeypatch.setattr(USAJobsApiClient, "historic_joa", fake_historic_joa)
+    monkeypatch.setattr(USAJobsClient, "historic_joa", fake_historic_joa)
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
 
     pages = list(
         client.historic_joa_pages(
@@ -70,9 +70,9 @@ def test_historic_joa_pages_duplicate_token(
     def fake_historic_joa(self, **_):
         return responses.pop(0)
 
-    monkeypatch.setattr(USAJobsApiClient, "historic_joa", fake_historic_joa)
+    monkeypatch.setattr(USAJobsClient, "historic_joa", fake_historic_joa)
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
     iterator = client.historic_joa_pages()
 
     assert next(iterator)
@@ -89,7 +89,7 @@ def test_historic_joa_items_yields_items_across_pages(
 ) -> None:
     """Ensure historic_joa_items yields items and follows continuation tokens."""
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
 
     first_page = deepcopy(historicjoa_response_payload)
     first_page["paging"]["metadata"]["continuationToken"] = "TOKEN2"
@@ -178,7 +178,7 @@ def test_historic_joa_items_respects_initial_token(
 ) -> None:
     """Ensure historic_joa_items uses the supplied initial continuation token."""
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
 
     payload = deepcopy(historicjoa_response_payload)
     payload["paging"]["metadata"]["continuationToken"] = None
