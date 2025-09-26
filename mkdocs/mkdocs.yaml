@@ -14,9 +14,7 @@ theme:
 
 nav:
   - Home: index.md
-  - Reference:
-      - __init__.py: ref/__init__.md
-      - _version.py: ref/_version.md
+  - Reference: ref/
   - About:
       - Changelog: about/changelog.md
       - License: about/license.md
@@ -26,6 +24,9 @@ plugins:
   - gen-files:
       scripts:
         - gen_ref_pages.py
+  - literate-nav:
+      nav_file: NAV_REF.md
+  - section-index
   - mkdocstrings
   - external-files:
       files:
