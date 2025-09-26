@@ -1,10 +1,9 @@
 name: Publish docs to GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
+    branches: [main] # PR verification only (base=main)
+  push:
     branches:
       - main
 
@@ -12,7 +11,10 @@ permissions:
   contents: read
 
 jobs:
+  # Build job for PR verification
   build:
+    if: github.event_name == 'pull_request'
+    name: Build docs
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +29,7 @@ jobs:
   publish:
     if: github.event_name == 'push'
     needs: build
-    name: Publish
+    name: Publish docs
     runs-on: ubuntu-latest
     permissions:
       contents: write
