@@ -126,7 +126,7 @@ class USAJobsClient:
         return SearchEndpoint.Response.model_validate(resp.json())
 
     def search_jobs_pages(self, **kwargs) -> Iterator[SearchEndpoint.Response]:
-        """Yield job search result pages, paginating to the next page.
+        """Yield Job Search pages, paginating to the next page.
 
         This can handle fresh requests or continue requests from a given page number.
 
@@ -183,6 +183,16 @@ class USAJobsClient:
                 break
 
             current_page += 1
+
+    def search_jobs_items(self, **kwargs) -> Iterator[SearchEndpoint.JobSummary]:
+        """Yield Job Search job items, handling pagination as needed.
+
+        :yield: The job summary item.
+        :rtype: Iterator[SearchEndpoint.JobSummary]
+        """
+        for resp in self.search_jobs_pages(**kwargs):
+            for item in resp.jobs():
+                yield item
 
     def historic_joa(self, **kwargs) -> HistoricJoaEndpoint.Response:
         """Query the Historic JOAs API.
