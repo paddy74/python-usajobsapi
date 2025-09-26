@@ -1,9 +1,46 @@
 """Helper utility functions."""
 
+import datetime as dt
 from enum import Enum
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel
+
+
+def _normalize_date(value: None | dt.datetime | dt.date | str) -> Optional[dt.date]:
+    """Normalize to `datetime.date`."""
+
+    if value is None:
+        return None
+    if isinstance(value, dt.datetime):
+        return value.date()
+    if isinstance(value, dt.date):
+        return value
+    if isinstance(value, str):
+        try:
+            return dt.date.fromisoformat(value)
+        except ValueError as exc:
+            msg = "Value must be an ISO 8601 date string (YYYY-MM-DD)"
+            raise ValueError(msg) from exc
+    msg = "Expected value type of datetime, date, or ISO date string"
+    raise TypeError(msg)
+
+
+def _normalize_yn_bool(value: None | bool | str) -> Optional[bool]:
+    """Normalize "Y"/"N" to `bool`."""
+
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().upper()
+        if normalized in {"Y", "YES", "TRUE", "1"}:
+            return True
+        if normalized in {"N", "NO", "FALSE", "0"}:
+            return False
+        raise ValueError("Value must be a Y/YES/TRUE/1 or N/NO/FALSE/0 string")
+    raise TypeError("Expected value type of bool or Y/N string")
 
 
 def _normalize_param(value: Any) -> Optional[str]:
