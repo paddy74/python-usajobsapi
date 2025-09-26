@@ -23,3 +23,29 @@ jobs:
         run: uv run mkdocs build -f mkdocs/mkdocs.yaml
 
       - uses: ./.github/actions/python-post
+
+  publish:
+    if: github.event_name == 'push'
+    needs: build
+    name: Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/python-init
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy to GitHub Pages
+        run: uv run mkdocs gh-deploy --force --clean --config-file mkdocs/mkdocs.yaml --remote-branch gh-pages
+
+      - uses: ./.github/actions/python-post
