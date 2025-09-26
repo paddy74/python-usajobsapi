@@ -4,24 +4,6 @@ import pytest
 
 
 @pytest.fixture
-def historicjoa_params_kwargs() -> Dict[str, str]:
-    """Field-value mapping used to build HistoricJoaEndpoint params models."""
-
-    return {
-        "hiring_agency_codes": "AGENCY1",
-        "hiring_department_codes": "DEPT1",
-        "position_series": "2210",
-        "announcement_numbers": "23-ABC",
-        "usajobs_control_numbers": "1234567",
-        "start_position_open_date": "2020-01-01",
-        "end_position_open_date": "2020-12-31",
-        "start_position_close_date": "2021-01-01",
-        "end_position_close_date": "2021-12-31",
-        "continuation_token": "token123",
-    }
-
-
-@pytest.fixture
 def job_summary_payload():
     """Sample payload matching the API's job summary schema."""
     return {
@@ -69,6 +51,30 @@ def job_summary_payload():
                 },
             }
         },
+    }
+
+
+@pytest.fixture
+def search_result_item(job_summary_payload):
+    """Wrap the job summary payload under the expected descriptor key."""
+    return {"MatchedObjectDescriptor": job_summary_payload}
+
+
+@pytest.fixture
+def historicjoa_params_kwargs() -> Dict[str, str]:
+    """Field-value mapping used to build HistoricJoaEndpoint params models."""
+
+    return {
+        "hiring_agency_codes": "AGENCY1",
+        "hiring_department_codes": "DEPT1",
+        "position_series": "2210",
+        "announcement_numbers": "23-ABC",
+        "usajobs_control_numbers": "1234567",
+        "start_position_open_date": "2020-01-01",
+        "end_position_open_date": "2020-12-31",
+        "start_position_close_date": "2021-01-01",
+        "end_position_close_date": "2021-12-31",
+        "continuation_token": "token123",
     }
 
 
@@ -188,9 +194,3 @@ def _historicjoa_items() -> List[Dict[str, object]]:
             ],
         },
     ]
-
-
-@pytest.fixture
-def search_result_item(job_summary_payload):
-    """Wrap the job summary payload under the expected descriptor key."""
-    return {"MatchedObjectDescriptor": job_summary_payload}
