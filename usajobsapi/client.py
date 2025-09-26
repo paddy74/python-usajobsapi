@@ -125,6 +125,65 @@ class USAJobsClient:
         )
         return SearchEndpoint.Response.model_validate(resp.json())
 
+    def search_jobs_pages(self, **kwargs) -> Iterator[SearchEndpoint.Response]:
+        """Yield job search result pages, paginating to the next page.
+
+        This can handle fresh requests or continue requests from a given page number.
+
+        :yield: The response object for the given page number.
+        :rtype: Iterator[SearchEndpoint.Response]
+        """
+
+        # Get page parameters by object name or alias
+        page_number: Optional[int] = kwargs.pop("page", kwargs.pop("Page", None))
+        results_per_page = kwargs.pop(
+            "results_per_page", kwargs.pop("ResultsPerPage", None)
+        )
+
+        # If not provided, then start at the first page
+        current_page: int = page_number or 1
+
+        while True:
+            call_kwargs = kwargs
+            call_kwargs["page"] = current_page
+
+            # results_per_page may not exist for the first loop iteration
+            if results_per_page:
+                call_kwargs["results_per_page"] = results_per_page
+
+            # Query for the response object
+            resp = self.search_jobs(**call_kwargs)
+            yield resp
+
+            # Break if no search_result object exists
+            search_result = resp.search_result
+            if not search_result:
+                break
+
+            # Break if there are no search_result.items
+            page_results_count = search_result.result_count or len(search_result.items)
+            if page_results_count <= 0:
+                break
+
+            # results_per_page may not exist for the first loop iteration
+            # so set it to the length of the returned search_result.items
+            if results_per_page is None:
+                results_per_page = page_results_count
+
+            # Break if there are no more pages
+            total_result_count = search_result.result_total
+            if (
+                total_result_count
+                and current_page * results_per_page >= total_result_count
+            ):
+                break
+
+            # Break if the page is shorter than results_per_page
+            if page_results_count < results_per_page:
+                break
+
+            current_page += 1
+
     def historic_joa(self, **kwargs) -> HistoricJoaEndpoint.Response:
         """Query the Historic JOAs API.
 

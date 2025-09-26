@@ -6,6 +6,120 @@ import pytest
 
 from usajobsapi.client import USAJobsClient
 from usajobsapi.endpoints.historicjoa import HistoricJoaEndpoint
+from usajobsapi.endpoints.search import SearchEndpoint
+
+# test search_jobs_pages
+# ---
+
+
+def _build_search_payload(items, count, total=None):
+    """Build a serialized SearchResult payload for mocked responses."""
+
+    payload = {
+        "SearchResult": {
+            "SearchResultCount": count,
+            "SearchResultItems": items,
+        }
+    }
+    if total is not None:
+        payload["SearchResult"]["SearchResultCountAll"] = total
+    return payload
+
+
+def test_search_jobs_pages_yields_pages(monkeypatch, search_result_item) -> None:
+    """Ensure search_jobs_pages iterates pages based on total counts."""
+
+    first_item = deepcopy(search_result_item)
+    first_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "1"
+    second_item = deepcopy(search_result_item)
+    second_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "2"
+    third_item = deepcopy(search_result_item)
+    third_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "3"
+    fourth_item = deepcopy(search_result_item)
+    fourth_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "4"
+    fifth_item = deepcopy(search_result_item)
+    fifth_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "5"
+
+    responses = [
+        SearchEndpoint.Response.model_validate(
+            _build_search_payload([first_item, second_item], 2, total=5)
+        ),
+        SearchEndpoint.Response.model_validate(
+            _build_search_payload([third_item, fourth_item], 2, total=5)
+        ),
+        SearchEndpoint.Response.model_validate(
+            _build_search_payload([fifth_item], 1, total=5)
+        ),
+    ]
+
+    captured_kwargs = []
+
+    def fake_search(self, **call_kwargs):
+        captured_kwargs.append(call_kwargs)
+        return responses.pop(0)
+
+    monkeypatch.setattr(USAJobsClient, "search_jobs", fake_search)
+
+    client = USAJobsClient()
+    pages = list(client.search_jobs_pages(keyword="engineer", results_per_page=2))
+
+    assert len(pages) == 3
+    assert [call["page"] for call in captured_kwargs] == [1, 2, 3]
+    assert all(call["results_per_page"] == 2 for call in captured_kwargs)
+
+
+def test_search_jobs_pages_handles_missing_total(
+    monkeypatch, search_result_item
+) -> None:
+    """Continue until a short page is returned when total counts are absent."""
+
+    first_page = SearchEndpoint.Response.model_validate(
+        _build_search_payload(
+            [deepcopy(search_result_item), deepcopy(search_result_item)],
+            2,
+        )
+    )
+    second_item = deepcopy(search_result_item)
+    second_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "3"
+    second_page = SearchEndpoint.Response.model_validate(
+        _build_search_payload([second_item], 1)
+    )
+
+    responses = [first_page, second_page]
+    captured_kwargs = []
+
+    def fake_search(self, **call_kwargs):
+        captured_kwargs.append(call_kwargs)
+        return responses.pop(0)
+
+    monkeypatch.setattr(USAJobsClient, "search_jobs", fake_search)
+
+    client = USAJobsClient()
+    pages = list(client.search_jobs_pages(keyword="space"))
+
+    assert len(pages) == 2
+    assert [call["page"] for call in captured_kwargs] == [1, 2]
+    assert "results_per_page" not in captured_kwargs[0]
+    assert captured_kwargs[1]["results_per_page"] == 2
+
+
+def test_search_jobs_pages_breaks_on_empty_results(monkeypatch) -> None:
+    """Stop pagination when a page returns no results."""
+
+    empty_page = SearchEndpoint.Response.model_validate(
+        {"SearchResult": {"SearchResultCount": 0, "SearchResultItems": []}}
+    )
+
+    def fake_search(self, **_):
+        return empty_page
+
+    monkeypatch.setattr(USAJobsClient, "search_jobs", fake_search)
+
+    client = USAJobsClient()
+    pages = list(client.search_jobs_pages(keyword="empty"))
+
+    assert len(pages) == 1
+
 
 # test historic_joa_pages
 # ---
