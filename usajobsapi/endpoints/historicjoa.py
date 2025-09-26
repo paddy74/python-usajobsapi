@@ -49,7 +49,7 @@ class HistoricJoaEndpoint(BaseModel):
             default=None, serialization_alias="EndPositionCloseDate"
         )
         continuation_token: Optional[str] = Field(
-            None, serialization_alias="continuationtoken"
+            None, serialization_alias="continuationToken"
         )
 
         def to_params(self) -> Dict[str, str]:

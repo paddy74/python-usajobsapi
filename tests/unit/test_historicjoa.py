@@ -29,7 +29,7 @@ def test_params_to_params_serializes_aliases(historicjoa_params_kwargs) -> None:
         "EndPositionOpenDate": "2020-12-31",
         "StartPositionCloseDate": "2021-01-01",
         "EndPositionCloseDate": "2021-12-31",
-        "continuationtoken": "token123",
+        "continuationToken": "token123",
     }
 
     assert serialized == expected
@@ -95,7 +95,7 @@ def test_params_to_params_omits_none_fields(historicjoa_params_kwargs) -> None:
 
     assert "HiringDepartmentCodes" not in serialized
     assert "AnnouncementNumbers" not in serialized
-    assert "continuationtoken" not in serialized
+    assert "continuationToken" not in serialized
     assert serialized["HiringAgencyCodes"] == "AGENCY1"
 
 
