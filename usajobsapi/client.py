@@ -142,7 +142,7 @@ class USAJobsApiClient:
     def historic_joa_pages(self, **kwargs) -> Iterator[HistoricJoaEndpoint.Response]:
         """Yield Historic JOA pages, following continuation tokens.
 
-        This can handle fresh requests or continue from a response that has a continuation token.
+        This can handle fresh requests or continue from a response page with a continuation token.
 
         :raises RuntimeError: On a duplicate continuation token.
         :yield: The response object for the given continuation token.
@@ -173,6 +173,44 @@ class USAJobsApiClient:
             yield resp
 
             # If more pages
+            if not next_token:
+                break
+
+            seen_tokens.add(next_token)
+            token = next_token
+
+    def historic_joa_items(self, **kwargs) -> Iterator[HistoricJoaEndpoint.Item]:
+        """Yield Historic JOA items, following continuation tokens.
+
+        This can handle fresh requests or continue from a response page with a continuation token.
+
+        :raises RuntimeError: On a duplicate continuation token.
+        :yield: The response item.
+        :rtype: Iterator[HistoricJoaEndpoint.Item]
+        """
+        token = kwargs.pop("continuationToken", kwargs.pop("continuation_token", None))
+
+        seen_tokens: set[str] = set()
+        if token:
+            seen_tokens.add(token)
+
+        while True:
+            call_kwargs = kwargs
+            if token:
+                call_kwargs["continuation_token"] = token
+
+            resp = self.historic_joa(**call_kwargs)
+
+            for item in resp.data:
+                yield item
+
+            next_token = resp.next_token()
+            # Handle duplicate tokens
+            if next_token and next_token in seen_tokens:
+                raise RuntimeError(
+                    f"Historic JOA pagination returned duplicate continuation token '{next_token}'"
+                )
+
             if not next_token:
                 break
 
