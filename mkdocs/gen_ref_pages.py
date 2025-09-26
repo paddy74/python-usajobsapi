@@ -1,7 +1,7 @@
 """Generate the code reference pages."""
 
 import logging
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import mkdocs_gen_files
 
@@ -9,11 +9,37 @@ logger = logging.getLogger(__name__)
 
 
 def gen_ref_pages(root_dir: Path, source_dir: Path, output_dir: str | Path) -> None:
-    """Emit mkdocstrings-compatible reference pages and navigation entries."""
-    nav = mkdocs_gen_files.Nav()
-    output_dir = Path(output_dir)
+    """Emit mkdocstrings-compatible reference pages and navigation entries.
 
-    for path in sorted(source_dir.rglob("*.py")):
+    :param root_dir: _description_
+    :type root_dir: Path
+    :param source_dir: _description_
+    :type source_dir: Path
+    :param output_dir: Output directory for the generated files; must be relative (non-escaping) to the docs directory.
+    :type output_dir: str | Path
+    :raises ValueError: _description_
+    :raises ValueError: _description_
+    :raises ValueError: _description_
+    """
+
+    # output_dir must be a relative, non-escaping path
+    output_dir = Path(output_dir)
+    if output_dir.is_absolute():
+        raise ValueError("output_dir must be relative to the docs directory")
+    if any(part == ".." for part in output_dir.parts):
+        raise ValueError("output_dir must not traverse outside the docs directory")
+
+    root_dir = root_dir.resolve()
+    source_dir = source_dir.resolve()
+
+    # Exit early if source_dir has no .py files
+    py_files = sorted(source_dir.rglob("*.py"))
+    if not py_files:
+        raise ValueError(f"no Python modules found under {source_dir}")
+
+    nav = mkdocs_gen_files.Nav()
+
+    for path in py_files:
         module_path = path.relative_to(source_dir).with_suffix("")
         doc_path = path.relative_to(source_dir).with_suffix(".md")
         full_doc_path = output_dir / doc_path
@@ -29,7 +55,8 @@ def gen_ref_pages(root_dir: Path, source_dir: Path, output_dir: str | Path) -> N
             full_doc_path = full_doc_path.with_name("index.md")
 
         full_parts = (source_dir.name,) + module_parts
-        nav[full_parts] = doc_path.as_posix()
+        doc_uri = PurePosixPath(doc_path).as_posix()  # normalize nav entries
+        nav[full_parts] = doc_uri
 
         if not module_parts:
             identifier = source_dir.name
