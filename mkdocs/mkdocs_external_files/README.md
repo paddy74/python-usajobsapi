@@ -21,7 +21,7 @@ uv pip install mkdocs-external-files
 
 - `src` accepts absolute paths or paths relative to the MkDocs config file.
 - Glob patterns (`*`, `?`, `[]`) require `dest` to end with `/` to indicate a directory target.
-- `dest` paths must be relative; during a build the are created in `site_dir`.
+- `dest` accepts relative paths to the `docs_dir`; during a build they are created in `site_dir`.
 
 ### Configuration
 
@@ -38,11 +38,27 @@ plugins:
           dest: extras/assets/
 ```
 
-## Behavior
+### Behavior
 
 - `mkdocs serve`: Sources are streamed directly; nothing is copied into `docs_dir`, but live reload will watch the resolved absolute paths.
 - `mkdocs build`: Virtual files are materialized into `site_dir`, so deployments that publish only the build output still include the added sources.
 - Missing sources will result in a `FileNotFoundError` exception.
+
+## Troubleshooting
+
+If you are using [`mkdocs-gen-files`](https://github.com/oprypin/mkdocs-gen-files) then you _must_ place `mkdocs-external-files` after `mkdocs-gen-files` in your plugin settings.
+
+```yaml
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - gen_ref_pages.py
+  - external-files:
+      files:
+        - src: ../README.md
+          dest: extras/README.md
+```
 
 ## Contributing
 
