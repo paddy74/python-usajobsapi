@@ -95,3 +95,20 @@ def _dump_by_alias(model: BaseModel) -> Dict[str, str]:
         if norm_val:
             out[k] = norm_val
     return out
+
+
+def _is_inrange(n: int | float, lower: int | float, upper: int | float):
+    """A simple utility function that checks a given value is within the given closed interval.
+
+    A closed interval [a, b] represents the set of all real numbers greater or equal to a and less or equal to b.
+
+    :param n: _description_
+    :type n: int
+    :param lower: _description_
+    :type lower: int
+    :param upper: _description_
+    :type upper: int
+    :return: _description_
+    :rtype: _type_
+    """
+    return n >= lower and n <= upper
