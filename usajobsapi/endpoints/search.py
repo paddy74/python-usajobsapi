@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 from enum import StrEnum
 from typing import Annotated, Any, Dict, List, Optional
 
@@ -17,7 +18,7 @@ from pydantic import (
 )
 
 from usajobsapi.endpoints._validators import isvalid_pay_grade
-from usajobsapi.utils import _dump_by_alias
+from usajobsapi.utils import _dump_by_alias, _normalize_date
 
 # Enums for query-params
 # ---
@@ -530,12 +531,23 @@ class SearchEndpoint(BaseModel):
         position_remuneration: List[SearchEndpoint.PositionRemuneration] = Field(
             default_factory=list, alias="PositionRemuneration"
         )
-        publication_start_date: Optional[str] = Field(
+        publication_start_date: Optional[dt.date] = Field(
             default=None, alias="PublicationStartDate"
         )
-        application_close_date: Optional[str] = Field(
+        application_close_date: Optional[dt.date] = Field(
             default=None, alias="ApplicationCloseDate"
         )
+
+        @field_validator(
+            "publication_start_date", "application_close_date", mode="before"
+        )
+        @classmethod
+        def _normalize_date_fields(
+            cls, value: None | dt.datetime | dt.date | str
+        ) -> Optional[dt.date]:
+            """Coerce date-like inputs to `datetime.date`."""
+
+            return _normalize_date(value)
 
         def summary(self) -> Optional[str]:
             """Helper method returning the most descriptive summary for the job."""

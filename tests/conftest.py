@@ -1,6 +1,24 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import pytest
+
+from usajobsapi.endpoints.search import HiringPath
+
+# search fixtures
+# ---
+
+
+@pytest.fixture
+def search_params_kwargs() -> Dict[str, Any]:
+    """Field-value mapping used to build SearchEndpoint params models."""
+    return {
+        "keyword": "developer",
+        "location_names": ["City, ST", "Town, ST2"],
+        "radius": 25,
+        "relocation": True,
+        "job_category_codes": ["001", "002"],
+        "hiring_paths": [HiringPath.PUBLIC, HiringPath.VET],
+    }
 
 
 @pytest.fixture
@@ -58,6 +76,10 @@ def job_summary_payload():
 def search_result_item(job_summary_payload):
     """Wrap the job summary payload under the expected descriptor key."""
     return {"MatchedObjectDescriptor": job_summary_payload}
+
+
+# historicjoa fixtures
+# ---
 
 
 @pytest.fixture

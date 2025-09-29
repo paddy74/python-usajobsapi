@@ -1,20 +1,16 @@
 import pytest
 
-from usajobsapi.endpoints.search import HiringPath, SearchEndpoint
+from usajobsapi.endpoints.search import SearchEndpoint
 
 
 class TestSearchEndpointParams:
-    def test_to_params_serialization(self):
-        data = {
-            "keyword": "developer",
-            "location_names": ["City, ST", "Town, ST2"],
-            "radius": 25,
-            "relocation": True,
-            "job_category_codes": ["001", "002"],
-            "hiring_paths": [HiringPath.PUBLIC, HiringPath.VET],
-        }
-        params = SearchEndpoint.Params.model_validate(data)
-        assert params.to_params() == {
+    def test_to_params_serialization(self, search_params_kwargs):
+        """Validate Params.to_params uses USAJOBS aliases and formatting."""
+
+        params = SearchEndpoint.Params(**search_params_kwargs)
+
+        serialized = params.to_params()
+        expected = {
             "Keyword": "developer",
             "LocationName": "City, ST;Town, ST2",
             "Radius": "25",
@@ -22,6 +18,8 @@ class TestSearchEndpointParams:
             "JobCategoryCode": "001;002",
             "HiringPath": "public;vet",
         }
+
+        assert serialized == expected
 
     def test_radius_requires_location(self):
         with pytest.raises(ValueError):
