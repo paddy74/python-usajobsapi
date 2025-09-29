@@ -34,7 +34,7 @@ class TestSearchEndpointParams:
 
 class TestSearchEndpointResponses:
     def test_job_summary_parses_nested_fields(self, job_summary_payload):
-        summary = SearchEndpoint.JobSummary.model_validate(job_summary_payload)
+        summary = SearchEndpoint.JOAItem.model_validate(job_summary_payload)
 
         assert summary.position_id == "24-123456"
         assert summary.position_uri == "https://example.com/job/1"

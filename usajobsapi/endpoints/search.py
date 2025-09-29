@@ -491,8 +491,8 @@ class SearchEndpoint(BaseModel):
             default=None, alias="Details"
         )
 
-    class JobSummary(BaseModel):
-        """Normalized representation of a search result item."""
+    class JOAItem(BaseModel):
+        """Represents a job opportunity annoucement object search result item."""
 
         id: str = Field(alias="MatchedObjectId")
         position_id: Optional[str] = Field(default=None, alias="PositionID")
@@ -606,14 +606,14 @@ class SearchEndpoint(BaseModel):
             description="Array of job opportunity announcement objects that matched search criteria.",
         )
 
-        def jobs(self) -> List[SearchEndpoint.JobSummary]:
+        def jobs(self) -> List[SearchEndpoint.JOAItem]:
             """Normalize the list of search results, skiping malformed payloads."""
-            out: List[SearchEndpoint.JobSummary] = []
+            out: List[SearchEndpoint.JOAItem] = []
             for item in self.items:
                 # Some responses nest the item under 'MatchedObjectDescriptor'
                 descriptor = item.get("MatchedObjectDescriptor") or item
                 try:
-                    out.append(SearchEndpoint.JobSummary.model_validate(descriptor))
+                    out.append(SearchEndpoint.JOAItem.model_validate(descriptor))
                 except ValidationError:
                     continue
             return out
@@ -635,7 +635,7 @@ class SearchEndpoint(BaseModel):
             default=None, alias="SearchResult"
         )
 
-        def jobs(self) -> List[SearchEndpoint.JobSummary]:
+        def jobs(self) -> List[SearchEndpoint.JOAItem]:
             """Helper method to directly expose parsed jobs in the response object."""
             if not self.search_result:
                 return []

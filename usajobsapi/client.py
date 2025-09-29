@@ -184,11 +184,11 @@ class USAJobsClient:
 
             current_page += 1
 
-    def search_jobs_items(self, **kwargs) -> Iterator[SearchEndpoint.JobSummary]:
+    def search_jobs_items(self, **kwargs) -> Iterator[SearchEndpoint.JOAItem]:
         """Yield Job Search job items, handling pagination as needed.
 
         :yield: The job summary item.
-        :rtype: Iterator[SearchEndpoint.JobSummary]
+        :rtype: Iterator[SearchEndpoint.JOAItem]
         """
         for resp in self.search_jobs_pages(**kwargs):
             for item in resp.jobs():
