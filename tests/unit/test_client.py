@@ -30,15 +30,15 @@ def test_search_jobs_pages_yields_pages(monkeypatch, search_result_item) -> None
     """Ensure search_jobs_pages iterates pages based on total counts."""
 
     first_item = deepcopy(search_result_item)
-    first_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "1"
+    first_item["MatchedObjectDescriptor"]["MatchedObjectId"] = 1
     second_item = deepcopy(search_result_item)
-    second_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "2"
+    second_item["MatchedObjectDescriptor"]["MatchedObjectId"] = 2
     third_item = deepcopy(search_result_item)
-    third_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "3"
+    third_item["MatchedObjectDescriptor"]["MatchedObjectId"] = 3
     fourth_item = deepcopy(search_result_item)
-    fourth_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "4"
+    fourth_item["MatchedObjectDescriptor"]["MatchedObjectId"] = 4
     fifth_item = deepcopy(search_result_item)
-    fifth_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "5"
+    fifth_item["MatchedObjectDescriptor"]["MatchedObjectId"] = 5
 
     responses = [
         SearchEndpoint.Response.model_validate(
@@ -80,7 +80,7 @@ def test_search_jobs_pages_handles_missing_total(
         )
     )
     second_item = deepcopy(search_result_item)
-    second_item["MatchedObjectDescriptor"]["MatchedObjectId"] = "3"
+    second_item["MatchedObjectDescriptor"]["MatchedObjectId"] = 3
     second_page = SearchEndpoint.Response.model_validate(
         _build_search_payload([second_item], 1)
     )
@@ -152,11 +152,11 @@ def test_search_jobs_items_yields_jobs(monkeypatch, job_summary_payload) -> None
     client = USAJobsClient()
 
     first_payload = deepcopy(job_summary_payload)
-    first_payload["MatchedObjectId"] = "1"
+    first_payload["MatchedObjectId"] = 1
     second_payload = deepcopy(job_summary_payload)
-    second_payload["MatchedObjectId"] = "2"
+    second_payload["MatchedObjectId"] = 2
     third_payload = deepcopy(job_summary_payload)
-    third_payload["MatchedObjectId"] = "3"
+    third_payload["MatchedObjectId"] = 3
 
     responses = [
         _search_response_payload(
@@ -185,7 +185,7 @@ def test_search_jobs_items_yields_jobs(monkeypatch, job_summary_payload) -> None
 
     summaries = list(client.search_jobs_items(results_per_page=2))
 
-    assert [summary.id for summary in summaries] == ["1", "2", "3"]
+    assert [summary.id for summary in summaries] == [1, 2, 3]
 
 
 # test historic_joa_pages

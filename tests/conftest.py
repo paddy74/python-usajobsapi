@@ -25,7 +25,7 @@ def search_params_kwargs() -> Dict[str, Any]:
 def job_summary_payload():
     """Sample payload matching the API's job summary schema."""
     return {
-        "MatchedObjectId": "1",
+        "MatchedObjectId": 1,
         "PositionID": "24-123456",
         "PositionTitle": "Engineer",
         "OrganizationName": "NASA",

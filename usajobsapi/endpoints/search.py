@@ -494,7 +494,7 @@ class SearchEndpoint(BaseModel):
     class JOAItem(BaseModel):
         """Represents a job opportunity annoucement object search result item."""
 
-        id: str = Field(alias="MatchedObjectId")
+        id: int = Field(alias="MatchedObjectId", description="Control Number")
         position_id: Optional[str] = Field(default=None, alias="PositionID")
         position_title: str = Field(alias="PositionTitle")
         position_uri: Optional[str] = Field(default=None, alias="PositionURI")

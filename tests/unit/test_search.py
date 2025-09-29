@@ -68,7 +68,7 @@ class TestSearchEndpointResponses:
     def test_search_result_jobs_parsing(self, search_result_item):
         items = [
             search_result_item,
-            {"MatchedObjectId": "2", "PositionTitle": "Analyst"},
+            {"MatchedObjectId": 2, "PositionTitle": "Analyst"},
             {"MatchedObjectDescriptor": {"MatchedObjectId": "3"}},  # invalid
         ]
         search_result = SearchEndpoint.SearchResult.model_validate(
@@ -80,8 +80,8 @@ class TestSearchEndpointResponses:
         )
         jobs = search_result.jobs()
         assert len(jobs) == 2
-        assert jobs[0].id == "1"
-        assert jobs[1].id == "2"
+        assert jobs[0].id == 1
+        assert jobs[1].id == 2
 
     def test_response_model_parsing(self, search_result_item):
         response = SearchEndpoint.Response.model_validate(
@@ -103,7 +103,7 @@ class TestSearchEndpointResponses:
         assert response.params.keyword == "python"
         assert response.search_result is not None
         jobs = response.search_result.jobs()
-        assert jobs[0].id == "1"
+        assert jobs[0].id == 1
 
     def test_response_jobs_helper(self, search_result_item):
         response = SearchEndpoint.Response.model_validate(
@@ -117,7 +117,7 @@ class TestSearchEndpointResponses:
         )
         jobs = response.jobs()
         assert len(jobs) == 1
-        assert jobs[0].id == "1"
+        assert jobs[0].id == 1
 
         empty_response = SearchEndpoint.Response.model_validate({})
         assert empty_response.jobs() == []
