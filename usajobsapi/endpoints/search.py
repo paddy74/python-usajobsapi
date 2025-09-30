@@ -11,7 +11,6 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    ValidationError,
     ValidationInfo,
     field_validator,
     model_validator,
@@ -104,13 +103,13 @@ class SearchEndpoint(BaseModel):
 
         keyword: Optional[str] = Field(
             None,
-            serialization_alias="Keyword",
+            alias="Keyword",
             description="Issues search to find hits based on a keyword. Optional. Keyword will search for all of the words specified (or synonyms of the word) throughout the job announcement.",
             examples=["https://data.usajobs.gov/api/search?Keyword=Software"],
         )
         position_title: Optional[str] = Field(
             None,
-            serialization_alias="PositionTitle",
+            alias="PositionTitle",
             description="""
             Issues search to find hits in the title of the job.
 
@@ -123,7 +122,7 @@ class SearchEndpoint(BaseModel):
 
         remuneration_min: Optional[int] = Field(
             None,
-            serialization_alias="RemunerationMinimumAmount",
+            alias="RemunerationMinimumAmount",
             description="""
             Issues search to find hits with the minimum salary specified.
 
@@ -135,7 +134,7 @@ class SearchEndpoint(BaseModel):
         )
         remuneration_max: Optional[int] = Field(
             None,
-            serialization_alias="RemunerationMaximumAmount",
+            alias="RemunerationMaximumAmount",
             description="""
             Issues search to find hits with the maximum salary specified.
 
@@ -150,7 +149,7 @@ class SearchEndpoint(BaseModel):
         pay_grade_high: Annotated[Optional[str], AfterValidator(isvalid_pay_grade)] = (
             Field(
                 None,
-                serialization_alias="PayGradeHigh",
+                alias="PayGradeHigh",
                 description="""
                 Issues search to find hits with the maximum pay grade specified. Must be 01 through 15. This is the ending grade for the job. (Caution: Fed speak ahead but it cannot be helped.) The grade along with series is used by the Federal government to categorize and define jobs.
 
@@ -168,7 +167,7 @@ class SearchEndpoint(BaseModel):
         pay_grade_low: Annotated[Optional[str], AfterValidator(isvalid_pay_grade)] = (
             Field(
                 None,
-                serialization_alias="PayGradeLow",
+                alias="PayGradeLow",
                 description="Issues search to find hits with the minimum pay grade specified. Must be 01 through 15. This is the beginning grade for the job. See PayGradeHigh for more information.",
                 examples=[
                     "https://data.usajobs.gov/api/Search?PayGradeLow=04",
@@ -179,32 +178,32 @@ class SearchEndpoint(BaseModel):
 
         job_category_codes: List[str] = Field(
             default_factory=list,
-            serialization_alias="JobCategoryCode",
+            alias="JobCategoryCode",
             description="Issues a search to find hits with the job category series specified.",
             examples=["https://data.usajobs.gov/api/Search?JobCategoryCode=0830"],
         )
         position_schedule_type_codes: List[int] = Field(
             default_factory=list,
-            serialization_alias="PositionScheduleTypeCode",
+            alias="PositionScheduleTypeCode",
             description="Issues a search to find hits for jobs matching the specified job schedule. This field is also known as work schedule.",
             examples=["https://data.usajobs.gov/api/Search?PositionSchedule=4"],
         )
         position_offering_type_codes: List[int] = Field(
             default_factory=list,
-            serialization_alias="PositionOfferingTypeCode",
+            alias="PositionOfferingTypeCode",
             description="Issues a search to find jobs within the specified type. This field is also known as Work Type.",
         )
 
         organization: List[str] = Field(
             default_factory=list,
-            serialization_alias="Organization",
+            alias="Organization",
             description="Issues a search to find jobs for the specified agency using the Agency Subelement Code.",
             examples=["https://data.usajobs.gov/api/Search?Organization=TR"],
         )
 
         location_names: List[str] = Field(
             default_factory=list,
-            serialization_alias="LocationName",
+            alias="LocationName",
             description="Issues a search to find hits within the specified location. This is the city or military installation name. LocationName simplifies location based search as the user does not need to know or account for each and every Location Code. LocationName will search for all location codes and ZIP codes that have that specific description.",
             examples=[
                 "https://data.usajobs.gov/api/Search?LocationName=Washington%20DC,%20District%20of%20Columbia",
@@ -214,7 +213,7 @@ class SearchEndpoint(BaseModel):
 
         travel_percentage: List[int] = Field(
             default_factory=list,
-            serialization_alias="TravelPercentage",
+            alias="TravelPercentage",
             description="Issues a search to find hits for jobs matching the specified travel level.",
             examples=[
                 "https://data.usajobs.gov/api/Search?TravelPercentage=0",
@@ -225,12 +224,12 @@ class SearchEndpoint(BaseModel):
         )
         relocation: Optional[bool] = Field(
             None,
-            serialization_alias="RelocationIndicator",
+            alias="RelocationIndicator",
             description="Issues a search to find hits for jobs matching the relocation filter.",
         )
         security_clearance_required: List[int] = Field(
             default_factory=list,
-            serialization_alias="SecurityClearanceRequired",
+            alias="SecurityClearanceRequired",
             description="Issues a search to find hits for jobs matching the specified security clearance.",
             examples=[
                 "https://data.usajobs.gov/api/Search?SecurityClearanceRequired=1"
@@ -241,14 +240,14 @@ class SearchEndpoint(BaseModel):
 
         supervisory_status: Optional[str] = Field(
             None,
-            serialization_alias="SupervisoryStatus",
+            alias="SupervisoryStatus",
             description="Issues a search to find hits for jobs matching the specified supervisory status.",
         )
 
         days_since_posted: Annotated[
             Optional[int],
             Field(
-                serialization_alias="DatePosted",
+                alias="DatePosted",
                 description="Issues a search to find hits for jobs that were posted within the number of days specified.",
                 strict=True,
                 ge=0,
@@ -257,13 +256,13 @@ class SearchEndpoint(BaseModel):
         ] = None
         job_grade_codes: List[str] = Field(
             default_factory=list,
-            serialization_alias="JobGradeCode",
+            alias="JobGradeCode",
             description="Issues a search to find hits for jobs matching the grade code specified. This field is also known as Pay Plan.",
         )
 
         sort_field: Optional[SortField] = Field(
             None,
-            serialization_alias="SortField",
+            alias="SortField",
             description="Issues a search that will be sorted by the specified field.",
             examples=[
                 "https://data.usajobs.gov/api/Search?PositionTitle=Electrical&SortField=PositionTitle"
@@ -271,14 +270,14 @@ class SearchEndpoint(BaseModel):
         )
         sort_direction: Optional[SortDirection] = Field(
             None,
-            serialization_alias="SortDirection",
+            alias="SortDirection",
             description="Issues a search that will be sorted by the SortField specified, in the direction specified.",
         )
 
         page: Annotated[
             Optional[int],
             Field(
-                serialization_alias="Page",
+                alias="Page",
                 description="Issues a search to pull the paged results specified.",
                 strict=True,
                 ge=1,
@@ -287,7 +286,7 @@ class SearchEndpoint(BaseModel):
         results_per_page: Annotated[
             Optional[int],
             Field(
-                serialization_alias="ResultsPerPage",
+                alias="ResultsPerPage",
                 description="Issues a search and returns the page size specified. In this example, 25 jobs will be return for the first page.",
                 strict=True,
                 ge=1,
@@ -297,7 +296,7 @@ class SearchEndpoint(BaseModel):
 
         who_may_apply: Optional[WhoMayApply] = Field(
             None,
-            serialization_alias="WhoMayApply",
+            alias="WhoMayApply",
             description="Issues a search to find hits based on the desired candidate designation. In this case, public will find jobs that U.S. citizens can apply for.",
             examples=["https://data.usajobs.gov/api/Search?WhoMayApply=public"],
         )
@@ -305,7 +304,7 @@ class SearchEndpoint(BaseModel):
         radius: Annotated[
             Optional[int],
             Field(
-                serialization_alias="Radius",
+                alias="Radius",
                 description="Issues a search when used along with LocationName, will expand the locations, based on the radius specified.",
                 examples=[
                     "https://data.usajobs.gov/api/Search?LocationName=Norfolk%20Virginia&Radius=75"
@@ -316,7 +315,7 @@ class SearchEndpoint(BaseModel):
         ] = None
         fields: Optional[FieldsMinMax] = Field(
             None,
-            serialization_alias="Fields",
+            alias="Fields",
             description="Issues a search that will return the minimum fields or maximum number of fields in the job. Min returns only the job summary.",
             examples=[
                 "https://data.usajobs.gov/api/Search?TravelPercentage=7&Fields=full",
@@ -326,25 +325,25 @@ class SearchEndpoint(BaseModel):
 
         salary_bucket: List[int] = Field(
             default_factory=list,
-            serialization_alias="SalaryBucket",
+            alias="SalaryBucket",
             description="Issues a search that will find hits for salaries matching the grouping specified. Buckets are assigned based on salary ranges.",
         )
         grade_bucket: List[int] = Field(
             default_factory=list,
-            serialization_alias="GradeBucket",
+            alias="GradeBucket",
             description="Issues a search that will find hits for grades that match the grouping specified.",
         )
 
         hiring_paths: List[HiringPath] = Field(
             default_factory=list,
-            serialization_alias="HiringPath",
+            alias="HiringPath",
             description="Issues a search that will find hits for hiring paths that match the hiring paths specified.",
             examples=["https://data.usajobs.gov/api/Search?HiringPath=public"],
         )
 
         mission_critical_tags: List[str] = Field(
             default_factory=list,
-            serialization_alias="MissionCriticalTags",
+            alias="MissionCriticalTags",
             description="Issues a search that will find hits for mission critical tags that match the grouping specified.",
             examples=[
                 "https://data.usajobs.gov/api/Search?MissionCriticalTags=STEM&Fields=full"
@@ -353,7 +352,7 @@ class SearchEndpoint(BaseModel):
 
         position_sensitivity: List[int] = Field(
             default_factory=list,
-            serialization_alias="PositionSensitivity",
+            alias="PositionSensitivity",
             description="Issues a search that will find hits for jobs matching the position sensitivity and risk specified.",
             examples=["https://data.usajobs.gov/api/Search?PositionSensitivity=1"],
             ge=1,
@@ -362,7 +361,7 @@ class SearchEndpoint(BaseModel):
 
         remote_indicator: Optional[bool] = Field(
             None,
-            serialization_alias="RemoteIndicator",
+            alias="RemoteIndicator",
             description="Issues a search to find hits for jobs matching the remote filter.",
         )
 
@@ -475,13 +474,103 @@ class SearchEndpoint(BaseModel):
         name: Optional[str] = Field(default=None, alias="Name")
         code: Optional[str] = Field(default=None, alias="Code")
 
+    class PositionFormatDesc(BaseModel):
+        """Represents a quick summary of the job opportunity announcement."""
+
+        content: Optional[str] = Field(default=None, alias="Content")
+        label: Optional[str] = Field(default=None, alias="Label")
+        label_desc: Optional[str] = Field(default=None, alias="LabelDescription")
+
     class UserAreaDetails(BaseModel):
         """Represents metadata stored under the UserArea.Details field."""
 
-        job_summary: Optional[str] = Field(default=None, alias="JobSummary")
-        hiring_path: Optional[str] = Field(default=None, alias="HiringPath")
+        duties: Optional[str] = Field(
+            default=None,
+            alias="MajorDuties",
+            description="Description of the duties of the job.",
+        )
+        education: Optional[str] = Field(
+            default=None,
+            alias="Education",
+            description="Education required or preferred by applicants.",
+        )
+        requirements: Optional[str] = Field(
+            default=None,
+            alias="Requirements",
+            description="Key Requirements of the job opportunity.",
+        )
+        evaluations: Optional[str] = Field(
+            default=None,
+            alias="Evaluations",
+            description="Qualification requirements of the job opportunity.",
+        )
+        how_apply: Optional[str] = Field(
+            default=None,
+            alias="HowToApply",
+            description="Description of the steps to take to apply for the job opportunity.",
+        )
+        what_next: Optional[str] = Field(
+            default=None,
+            alias="WhatToExpectNext",
+            description="Description of what can be expected during the application process.",
+        )
+        req_docs: Optional[str] = Field(
+            default=None,
+            alias="RequiredDocuments",
+            description="Required documents when applying for the job opportunity.",
+        )
+        benefits: Optional[str] = Field(
+            default=None,
+            alias="Benefits being offered as part of the job opportunity.",
+            description="BenefitsBenefits",
+        )
+        benefits_url: Optional[str] = Field(
+            default=None,
+            alias="BenefitsUrl",
+            description="URL to view benefit details being offered.",
+        )
+        other_info: Optional[str] = Field(
+            default=None,
+            alias="OtherInformation",
+            description="Additional information about the job opportunity.",
+        )
+        key_reqs: List[str] = Field(
+            default_factory=list,
+            alias="KeyRequirements",
+            description="List of requirements for the job opportunity.",
+        )
+        job_summary: Optional[str] = Field(
+            default=None,
+            alias="JobSummary",
+            description="Summary of the job opportunity.",
+        )
+
         who_may_apply: Optional[SearchEndpoint.WhoMayApplyInfo] = Field(
-            default=None, alias="WhoMayApply"
+            default=None,
+            alias="WhoMayApply",
+            description="Object that contains values for name and code of who may apply to the job opportunity.",
+        )
+
+        low_grade: Optional[str] = Field(
+            default=None,
+            alias="LowGrade",
+            description="Lowest potential grade level for the job opportunity.",
+        )
+        high_grade: Optional[str] = Field(
+            default=None,
+            alias="HighGrade",
+            description="Highest potential grade level for the job opportunity.",
+        )
+
+        sub_agency: Optional[str] = Field(
+            default=None,
+            alias="SubAgencyName",
+            description="SubAgencyName",
+        )
+        org_codes: Optional[str] = Field(
+            default=None,
+            alias="OrganizationCodes",
+            description="Organization codes separated by a slash (/).",
         )
 
     class UserArea(BaseModel):
@@ -490,56 +579,121 @@ class SearchEndpoint(BaseModel):
         details: Optional[SearchEndpoint.UserAreaDetails] = Field(
             default=None, alias="Details"
         )
+        is_radial_search: Optional[bool] = Field(
+            default=None,
+            alias="IsRadialSearch",
+            description="Was a radial search preformed.",
+        )
 
-    class JOAItem(BaseModel):
-        """Represents a job opportunity annoucement object search result item."""
+    class JOADescriptor(BaseModel):
+        position_id: Optional[str] = Field(
+            default=None, alias="PositionID", description="Job Announcement Number"
+        )
+        position_title: Optional[str] = Field(
+            default=None,
+            alias="PositionTitle",
+            description="Title of the job offering.",
+        )
+        position_uri: Optional[str] = Field(
+            default=None,
+            alias="PositionURI",
+            description="URI to view the job offering.",
+        )
+        apply_uri: List[str] = Field(
+            default_factory=list,
+            alias="ApplyURI",
+            description="URI to apply for the job offering.",
+        )
 
-        id: int = Field(alias="MatchedObjectId", description="Control Number")
-        position_id: Optional[str] = Field(default=None, alias="PositionID")
-        position_title: str = Field(alias="PositionTitle")
-        position_uri: Optional[str] = Field(default=None, alias="PositionURI")
-        # URI to apply for the job offering
-        apply_uri: List[str] = Field(default_factory=list, alias="ApplyURI")
-        organization_name: Optional[str] = Field(default=None, alias="OrganizationName")
-        department_name: Optional[str] = Field(default=None, alias="DepartmentName")
         locations_display: Optional[str] = Field(
             default=None, alias="PositionLocationDisplay"
         )
         locations: List[SearchEndpoint.JobLocation] = Field(
-            default_factory=list, alias="PositionLocation"
+            default_factory=list,
+            alias="PositionLocation",
+            description="Contains values for location name, country, country subdivision, city, latitude and longitude.",
         )
+
+        organization_name: Optional[str] = Field(
+            default=None,
+            alias="OrganizationName",
+            description="Name of the organization or agency offering the position.",
+        )
+        department_name: Optional[str] = Field(
+            default=None,
+            alias="DepartmentName",
+            description="Name of the department within the organization or agency offering the position.",
+        )
+
         job_categories: List[SearchEndpoint.JobCategory] = Field(
-            default_factory=list, alias="JobCategory"
+            default_factory=list,
+            alias="JobCategory",
+            description="List of job category objects that contain values for name and code.",
         )
         job_grades: List[SearchEndpoint.JobGrade] = Field(
-            default_factory=list, alias="JobGrade"
+            default_factory=list,
+            alias="JobGrade",
+            description="List of job grade objects that contains an code value. This field is also known as Pay Plan.",
         )
         position_schedules: List[SearchEndpoint.PositionSchedule] = Field(
-            default_factory=list, alias="PositionSchedule"
+            default_factory=list,
+            alias="PositionSchedule",
+            description="List of position schedule objects that contains values for name and code.",
         )
         position_offerings: List[SearchEndpoint.PositionOfferingType] = Field(
-            default_factory=list, alias="PositionOfferingType"
+            default_factory=list,
+            alias="PositionOfferingType",
+            description="List of position offering type objects that contains values for name and code. See PositionOfferingType in paramters above for list of code values.",
         )
+
+        qualification_summary: Optional[str] = Field(
+            default=None,
+            alias="QualificationSummary",
+            description="Summary of qualifications for the job offering.",
+        )
+
+        position_remuneration: List[SearchEndpoint.PositionRemuneration] = Field(
+            default_factory=list,
+            alias="PositionRemuneration",
+            description="List of position remuneration objects that contains MinimumRange, MaximumRange and RateIntervalCode. Gives the pay range and frequency.",
+        )
+        position_start_date: Optional[dt.date] = Field(
+            default=None,
+            alias="PositionStartDate",
+            description="The date the job opportunity will be open to applications.",
+        )
+        position_end_date: Optional[dt.date] = Field(
+            default=None,
+            alias="PositionEndDate",
+            description="Last date the job opportunity will be posted",
+        )
+        publication_start_date: Optional[dt.date] = Field(
+            default=None,
+            alias="PublicationStartDate",
+            description="Date the job opportunity is posted",
+        )
+        application_close_date: Optional[dt.date] = Field(
+            default=None,
+            alias="ApplicationCloseDate",
+            description="Last date applications will be accepted for the job opportunity",
+        )
+
+        position_format_desc: List[SearchEndpoint.PositionFormatDesc] = Field(
+            default_factory=list,
+            alias="PositionFormattedDescription",
+            description="Provides quick summary of job opportunity.",
+        )
+
         user_area: Optional[SearchEndpoint.UserArea] = Field(
             default=None, alias="UserArea"
         )
-        qualification_summary: Optional[str] = Field(
-            default=None, alias="QualificationSummary"
-        )
-        min_salary: Optional[float] = Field(default=None, alias="MinimumRange")
-        max_salary: Optional[float] = Field(default=None, alias="MaximumRange")
-        position_remuneration: List[SearchEndpoint.PositionRemuneration] = Field(
-            default_factory=list, alias="PositionRemuneration"
-        )
-        publication_start_date: Optional[dt.date] = Field(
-            default=None, alias="PublicationStartDate"
-        )
-        application_close_date: Optional[dt.date] = Field(
-            default=None, alias="ApplicationCloseDate"
-        )
 
         @field_validator(
-            "publication_start_date", "application_close_date", mode="before"
+            "position_start_date",
+            "position_end_date",
+            "publication_start_date",
+            "application_close_date",
+            mode="before",
         )
         @classmethod
         def _normalize_date_fields(
@@ -554,38 +708,16 @@ class SearchEndpoint(BaseModel):
 
             if self.user_area and self.user_area.details:
                 details = self.user_area.details
-                if details and details.job_summary:
+                if self.user_area.details and details.job_summary:
                     return details.job_summary
             return self.qualification_summary
 
-        def salary_range(self) -> tuple[Optional[float], Optional[float]]:
-            """Helper method returning the salary range inferred from remuneration metadata."""
+    class JOAItem(BaseModel):
+        """Represents a job opportunity annoucement object search result item."""
 
-            if self.position_remuneration:
-                minima = [
-                    r.minimum
-                    for r in self.position_remuneration
-                    if r.minimum is not None
-                ]
-                maxima = [
-                    r.maximum
-                    for r in self.position_remuneration
-                    if r.maximum is not None
-                ]
-                min_val = min(minima) if minima else None
-                max_val = max(maxima) if maxima else None
-                if min_val is not None or max_val is not None:
-                    return min_val, max_val
-            return self.min_salary, self.max_salary
-
-        def hiring_paths(self) -> List[str]:
-            """Helper method returning normalized hiring path codes from the user area."""
-
-            if self.user_area and self.user_area.details:
-                raw = self.user_area.details.hiring_path
-                if raw:
-                    return [path.strip() for path in raw.split(";") if path.strip()]
-            return []
+        id: int = Field(alias="MatchedObjectId", description="Control Number")
+        details: SearchEndpoint.JOADescriptor = Field(alias="MatchedObjectDescriptor")
+        rank: Optional[float] = Field(default=None, alias="RelevanceRank")
 
     class SearchResult(BaseModel):
         """Model of paginated search results."""
@@ -600,23 +732,11 @@ class SearchEndpoint(BaseModel):
             alias="SearchResultCountAll",
             description="Total Number of records that matched search criteria.",
         )
-        items: List[Dict[str, Any]] = Field(
+        items: List[SearchEndpoint.JOAItem] = Field(
             default_factory=list,
             alias="SearchResultItems",
             description="Array of job opportunity announcement objects that matched search criteria.",
         )
-
-        def jobs(self) -> List[SearchEndpoint.JOAItem]:
-            """Normalize the list of search results, skiping malformed payloads."""
-            out: List[SearchEndpoint.JOAItem] = []
-            for item in self.items:
-                # Some responses nest the item under 'MatchedObjectDescriptor'
-                descriptor = item.get("MatchedObjectDescriptor") or item
-                try:
-                    out.append(SearchEndpoint.JOAItem.model_validate(descriptor))
-                except ValidationError:
-                    continue
-            return out
 
     class Response(BaseModel):
         """Declarative definition of the endpoint's response object."""
@@ -636,7 +756,7 @@ class SearchEndpoint(BaseModel):
         )
 
         def jobs(self) -> List[SearchEndpoint.JOAItem]:
-            """Helper method to directly expose parsed jobs in the response object."""
+            """Helper method to directly expose search result items from the response object."""
             if not self.search_result:
                 return []
-            return self.search_result.jobs()
+            return self.search_result.items

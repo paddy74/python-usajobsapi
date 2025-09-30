@@ -33,91 +33,65 @@ class TestSearchEndpointParams:
 
 
 class TestSearchEndpointResponses:
-    def test_job_summary_parses_nested_fields(self, job_summary_payload):
-        summary = SearchEndpoint.JOAItem.model_validate(job_summary_payload)
+    def test_job_summary_parses_nested_fields(self, search_result_item):
+        summary = SearchEndpoint.JOAItem.model_validate(search_result_item)
 
-        assert summary.position_id == "24-123456"
-        assert summary.position_uri == "https://example.com/job/1"
-        assert summary.apply_uri == ["https://example.com/apply/1"]
+        assert summary.details.position_id == "24-123456"
+        assert summary.details.position_uri == "https://example.com/job/1"
+        assert summary.details.apply_uri == ["https://example.com/apply/1"]
         assert (
-            summary.department_name == "National Aeronautics and Space Administration"
+            summary.details.department_name
+            == "National Aeronautics and Space Administration"
         )
-        assert summary.locations_display == "Houston, TX"
+        assert summary.details.locations_display == "Houston, TX"
 
-        assert len(summary.locations) == 1
-        location = summary.locations[0]
+        assert len(summary.details.locations) == 1
+        location = summary.details.locations[0]
         assert location.city_name == "Houston"
         assert location.state_code == "TX"
         assert location.latitude == pytest.approx(29.7604)
         assert location.longitude == pytest.approx(-95.3698)
 
-        assert summary.job_categories[0].code == "0801"
-        assert summary.job_grades[0].current_grade == "12"
-        assert summary.position_schedules[0].name == "Full-time"
-        assert summary.position_offerings[0].code == "15317"
+        assert summary.details.job_categories[0].code == "0801"
+        assert summary.details.job_grades[0].current_grade == "12"
+        assert summary.details.position_schedules[0].name == "Full-time"
+        assert summary.details.position_offerings[0].code == "15317"
 
-        assert summary.salary_range() == (50000.0, 100000.0)
-        assert summary.hiring_paths() == ["public", "vet"]
-        assert summary.summary() == "Design and build spacecraft components."
+        assert summary.details.summary() == "Design and build spacecraft components."
 
-        assert summary.user_area
-        assert summary.user_area.details
-        assert summary.user_area.details.who_may_apply
-        assert summary.user_area.details.who_may_apply.name == "Open to the public"
-
-    def test_search_result_jobs_parsing(self, search_result_item):
-        items = [
-            search_result_item,
-            {"MatchedObjectId": 2, "PositionTitle": "Analyst"},
-            {"MatchedObjectDescriptor": {"MatchedObjectId": "3"}},  # invalid
-        ]
-        search_result = SearchEndpoint.SearchResult.model_validate(
-            {
-                "SearchResultCount": 3,
-                "SearchResultCountAll": 3,
-                "SearchResultItems": items,
-            }
+        assert summary.details.user_area
+        assert summary.details.user_area.details
+        assert summary.details.user_area.details.who_may_apply
+        assert (
+            summary.details.user_area.details.who_may_apply.name == "Open to the public"
         )
-        jobs = search_result.jobs()
-        assert len(jobs) == 2
+
+    def test_search_result_jobs_parsing(self, search_result_payload):
+        search_result = SearchEndpoint.SearchResult.model_validate(
+            search_result_payload
+        )
+
+        jobs = search_result.items
+        assert len(jobs) == 3
         assert jobs[0].id == 1
         assert jobs[1].id == 2
+        assert jobs[2].details.position_id == "3"
 
-    def test_response_model_parsing(self, search_result_item):
-        response = SearchEndpoint.Response.model_validate(
-            {
-                "LanguageCode": "EN",
-                "SearchParameters": {
-                    "keyword": "python",
-                    "location_names": ["Anywhere"],
-                },
-                "SearchResult": {
-                    "SearchResultCount": 1,
-                    "SearchResultCountAll": 1,
-                    "SearchResultItems": [search_result_item],
-                },
-            }
-        )
-        assert response.language == "EN"
-        assert response.params is not None
-        assert response.params.keyword == "python"
-        assert response.search_result is not None
-        jobs = response.search_result.jobs()
+    def test_response_model_parsing(self, search_response_payload):
+        resp = SearchEndpoint.Response.model_validate(search_response_payload)
+
+        assert resp.language == "EN"
+        assert resp.params is not None
+        assert resp.params.keyword == "python"
+        assert resp.search_result is not None
+        jobs = resp.search_result.items
         assert jobs[0].id == 1
 
-    def test_response_jobs_helper(self, search_result_item):
-        response = SearchEndpoint.Response.model_validate(
-            {
-                "SearchResult": {
-                    "SearchResultCount": 1,
-                    "SearchResultCountAll": 1,
-                    "SearchResultItems": [search_result_item],
-                }
-            }
-        )
-        jobs = response.jobs()
-        assert len(jobs) == 1
-        assert jobs[0].id == 1
+    def test_response_jobs_helper(self, search_response_payload):
+        empty_resp = SearchEndpoint.Response.model_validate({})
+        assert empty_resp.jobs() == []
 
-        empty_response = SearchEndpoint.Response.model_validate({})
-        assert empty_response.jobs() == []
+        resp = SearchEndpoint.Response.model_validate(search_response_payload)
+        jobs = resp.jobs()
+        assert len(jobs) == 3
+        assert jobs[0].id == 1

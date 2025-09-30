@@ -126,7 +126,7 @@ def test_search_jobs_pages_breaks_on_empty_results(monkeypatch) -> None:
 
 
 def _search_response_payload(
-    items: list[dict],
+    items: list[dict | SearchEndpoint.JOAItem],
     count: int,
     total: int,
     page: int,
@@ -135,8 +135,8 @@ def _search_response_payload(
     return {
         "LanguageCode": "EN",
         "SearchParameters": {
-            "page": page,
-            "results_per_page": results_per_page,
+            "Page": page,
+            "ResultsPerPage": results_per_page,
         },
         "SearchResult": {
             "SearchResultCount": count,
@@ -146,23 +146,23 @@ def _search_response_payload(
     }
 
 
-def test_search_jobs_items_yields_jobs(monkeypatch, job_summary_payload) -> None:
+def test_search_jobs_items_yields_jobs(monkeypatch, search_result_item) -> None:
     """Ensure search_jobs_items yields summaries across pages."""
 
     client = USAJobsClient()
 
-    first_payload = deepcopy(job_summary_payload)
+    first_payload = deepcopy(search_result_item)
     first_payload["MatchedObjectId"] = 1
-    second_payload = deepcopy(job_summary_payload)
+    second_payload = deepcopy(search_result_item)
     second_payload["MatchedObjectId"] = 2
-    third_payload = deepcopy(job_summary_payload)
+    third_payload = deepcopy(search_result_item)
     third_payload["MatchedObjectId"] = 3
 
     responses = [
         _search_response_payload(
             [
-                {"MatchedObjectDescriptor": first_payload},
-                {"MatchedObjectDescriptor": second_payload},
+                first_payload,
+                second_payload,
             ],
             2,
             3,
@@ -170,7 +170,7 @@ def test_search_jobs_items_yields_jobs(monkeypatch, job_summary_payload) -> None
             2,
         ),
         _search_response_payload(
-            [{"MatchedObjectDescriptor": third_payload}],
+            [third_payload],
             1,
             3,
             2,

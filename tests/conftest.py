@@ -22,60 +22,86 @@ def search_params_kwargs() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def job_summary_payload():
-    """Sample payload matching the API's job summary schema."""
+def search_result_item():
     return {
         "MatchedObjectId": 1,
-        "PositionID": "24-123456",
-        "PositionTitle": "Engineer",
-        "OrganizationName": "NASA",
-        "DepartmentName": "National Aeronautics and Space Administration",
-        "PositionURI": "https://example.com/job/1",
-        "ApplyURI": ["https://example.com/apply/1"],
-        "PositionLocationDisplay": "Houston, TX",
-        "PositionLocation": [
-            {
-                "LocationName": "Houston, Texas",
-                "LocationCode": "TX1234",
-                "CountryCode": "US",
-                "CountrySubDivisionCode": "TX",
-                "CityName": "Houston",
-                "Latitude": "29.7604",
-                "Longitude": "-95.3698",
-            }
-        ],
-        "JobCategory": [{"Code": "0801", "Name": "General Engineering"}],
-        "JobGrade": [{"Code": "GS", "CurrentGrade": "12"}],
-        "PositionSchedule": [{"Code": "1", "Name": "Full-time"}],
-        "PositionOfferingType": [{"Code": "15317", "Name": "Permanent"}],
-        "MinimumRange": 50000.0,
-        "MaximumRange": 100000.0,
-        "PositionRemuneration": [
-            {
-                "MinimumRange": "50000",
-                "MaximumRange": "100000",
-                "RateIntervalCode": "PA",
-                "Description": "Per Year",
-            }
-        ],
-        "ApplicationCloseDate": "2024-01-01",
-        "UserArea": {
-            "Details": {
-                "JobSummary": "Design and build spacecraft components.",
-                "HiringPath": "public;vet",
-                "WhoMayApply": {
-                    "Name": "Open to the public",
-                    "Code": "public",
-                },
-            }
+        "MatchedObjectDescriptor": {
+            "PositionID": "24-123456",
+            "PositionTitle": "Engineer",
+            "PositionURI": "https://example.com/job/1",
+            "ApplyURI": ["https://example.com/apply/1"],
+            "OrganizationName": "NASA",
+            "DepartmentName": "National Aeronautics and Space Administration",
+            "PositionLocationDisplay": "Houston, TX",
+            "PositionLocation": [
+                {
+                    "LocationName": "Houston, Texas",
+                    "LocationCode": "TX1234",
+                    "CountryCode": "US",
+                    "CountrySubDivisionCode": "TX",
+                    "CityName": "Houston",
+                    "Latitude": "29.7604",
+                    "Longitude": "-95.3698",
+                }
+            ],
+            "JobCategory": [{"Code": "0801", "Name": "General Engineering"}],
+            "JobGrade": [{"Code": "GS", "CurrentGrade": "12"}],
+            "PositionSchedule": [{"Code": "1", "Name": "Full-time"}],
+            "PositionOfferingType": [{"Code": "15317", "Name": "Permanent"}],
+            "MinimumRange": 50000.0,
+            "MaximumRange": 100000.0,
+            "PositionRemuneration": [
+                {
+                    "MinimumRange": "50000",
+                    "MaximumRange": "100000",
+                    "RateIntervalCode": "PA",
+                    "Description": "Per Year",
+                }
+            ],
+            "ApplicationCloseDate": "2024-01-01",
+            "UserArea": {
+                "Details": {
+                    "JobSummary": "Design and build spacecraft components.",
+                    "WhoMayApply": {
+                        "Name": "Open to the public",
+                        "Code": "public",
+                    },
+                }
+            },
         },
     }
 
 
 @pytest.fixture
-def search_result_item(job_summary_payload):
-    """Wrap the job summary payload under the expected descriptor key."""
-    return {"MatchedObjectDescriptor": job_summary_payload}
+def search_result_payload(search_result_item):
+    return {
+        "SearchResultCount": 3,
+        "SearchResultCountAll": 3,
+        "SearchResultItems": [
+            search_result_item,
+            {
+                "MatchedObjectId": 2,
+                "MatchedObjectDescriptor": {"PositionTitle": "Analyst"},
+            },
+            {
+                "MatchedObjectId": 3,
+                "MatchedObjectDescriptor": {"PositionID": "3"},
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def search_response_payload(search_result_payload):
+    """Sample payload matching the API's job summary schema."""
+    return {
+        "LanguageCode": "EN",
+        "SearchParameters": {
+            "Keyword": "python",
+            "LocationName": ["Atlanta,%20Georgia"],
+        },
+        "SearchResult": search_result_payload,
+    }
 
 
 # historicjoa fixtures
