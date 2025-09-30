@@ -13,7 +13,7 @@ from usajobsapi.endpoints import (
 )
 
 
-class USAJobsApiClient:
+class USAJobsClient:
     """Represents a client connection to the USAJOBS REST API."""
 
     def __init__(
@@ -110,20 +110,89 @@ class USAJobsApiClient:
         )
         return AnnouncementTextEndpoint.Response.model_validate(resp.json())
 
-    def job_search(self, **kwargs) -> SearchEndpoint.Response:
-        """Query the Job Search API.
+    def search_jobs(self, **kwargs) -> SearchEndpoint.Response:
+        """Query the [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search).
 
-        :return: _description_
+        :return: Active job listings matching the search criteria.
         :rtype: SearchEndpoint.Response
         """
         params = SearchEndpoint.Params(**kwargs)
         resp = self._request(
-            SearchEndpoint.model_fields["method"].default,
-            SearchEndpoint.model_fields["path"].default,
+            SearchEndpoint.model_fields["METHOD"].default,
+            SearchEndpoint.model_fields["PATH"].default,
             params.to_params(),
             add_auth=True,
         )
         return SearchEndpoint.Response.model_validate(resp.json())
+
+    def search_jobs_pages(self, **kwargs) -> Iterator[SearchEndpoint.Response]:
+        """Yield Job Search pages, paginating to the next page.
+
+        This can handle fresh requests or continue requests from a given page number.
+
+        :yield: The response object for the given page number.
+        :rtype: Iterator[SearchEndpoint.Response]
+        """
+
+        # Get page parameters by object name or alias
+        page_number: Optional[int] = kwargs.pop("page", kwargs.pop("Page", None))
+        results_per_page = kwargs.pop(
+            "results_per_page", kwargs.pop("ResultsPerPage", None)
+        )
+
+        # If not provided, then start at the first page
+        current_page: int = page_number or 1
+
+        while True:
+            call_kwargs = kwargs
+            call_kwargs["page"] = current_page
+
+            # results_per_page may not exist for the first loop iteration
+            if results_per_page:
+                call_kwargs["results_per_page"] = results_per_page
+
+            # Query for the response object
+            resp = self.search_jobs(**call_kwargs)
+            yield resp
+
+            # Break if no search_result object exists
+            search_result = resp.search_result
+            if not search_result:
+                break
+
+            # Break if there are no search_result.items
+            page_results_count = search_result.result_count or len(search_result.items)
+            if page_results_count <= 0:
+                break
+
+            # results_per_page may not exist for the first loop iteration
+            # so set it to the length of the returned search_result.items
+            if results_per_page is None:
+                results_per_page = page_results_count
+
+            # Break if there are no more pages
+            total_result_count = search_result.result_total
+            if (
+                total_result_count
+                and current_page * results_per_page >= total_result_count
+            ):
+                break
+
+            # Break if the page is shorter than results_per_page
+            if page_results_count < results_per_page:
+                break
+
+            current_page += 1
+
+    def search_jobs_items(self, **kwargs) -> Iterator[SearchEndpoint.JOAItem]:
+        """Yield Job Search job items, handling pagination as needed.
+
+        :yield: The job summary item.
+        :rtype: Iterator[SearchEndpoint.JOAItem]
+        """
+        for resp in self.search_jobs_pages(**kwargs):
+            for item in resp.jobs():
+                yield item
 
     def historic_joa(self, **kwargs) -> HistoricJoaEndpoint.Response:
         """Query the Historic JOAs API.

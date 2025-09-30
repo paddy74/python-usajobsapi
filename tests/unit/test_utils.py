@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from usajobsapi.utils import (
     _dump_by_alias,
+    _is_inrange,
     _normalize_date,
     _normalize_param,
     _normalize_yn_bool,
@@ -221,3 +222,16 @@ def test_idempotent_and_no_side_effects():
     assert out1 == out2
     # ensure model fields weren't mutated
     assert m.a_list_str == ["p", "q"]
+
+
+# test _dump_by_alias
+# ---
+
+
+def test_is_inrange():
+    # int
+    assert _is_inrange(1, 0, 2)
+    assert not _is_inrange(8, 0, 2)
+    # float
+    assert _is_inrange(1.4, 0.5, 2.3)
+    assert not _is_inrange(8.6, 0.5, 2.3)

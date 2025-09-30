@@ -1,39 +1,205 @@
-"""Unit tests for USAJobsApiClient."""
-
-from copy import deepcopy
+"""Unit tests for USAJobsClient."""
 
 import pytest
 
-from usajobsapi.client import USAJobsApiClient
+from usajobsapi.client import USAJobsClient
 from usajobsapi.endpoints.historicjoa import HistoricJoaEndpoint
+from usajobsapi.endpoints.search import SearchEndpoint
+
+# test search_jobs_pages
+# ---
+
+
+def test_search_jobs_pages_yields_pages(
+    monkeypatch: pytest.MonkeyPatch,
+    make_search_response_payload,
+    make_search_result_item,
+) -> None:
+    """Ensure search_jobs_pages iterates pages based on total counts."""
+
+    responses = [
+        SearchEndpoint.Response.model_validate(
+            make_search_response_payload(
+                items=[
+                    make_search_result_item(matched_object_id=1),
+                    make_search_result_item(matched_object_id=2),
+                ],
+                count=2,
+                total=5,
+            )
+        ),
+        SearchEndpoint.Response.model_validate(
+            make_search_response_payload(
+                items=[
+                    make_search_result_item(matched_object_id=3),
+                    make_search_result_item(matched_object_id=4),
+                ],
+                count=2,
+                total=5,
+            )
+        ),
+        SearchEndpoint.Response.model_validate(
+            make_search_response_payload(
+                items=[make_search_result_item(matched_object_id=5)],
+                count=1,
+                total=5,
+            )
+        ),
+    ]
+
+    captured_kwargs: list[dict[str, object]] = []
+
+    def fake_search(self, **call_kwargs):
+        captured_kwargs.append(call_kwargs)
+        return responses.pop(0)
+
+    monkeypatch.setattr(USAJobsClient, "search_jobs", fake_search)
+
+    client = USAJobsClient()
+    pages = list(client.search_jobs_pages(keyword="engineer", results_per_page=2))
+
+    assert len(pages) == 3
+    assert [call["page"] for call in captured_kwargs] == [1, 2, 3]
+    assert all(call["results_per_page"] == 2 for call in captured_kwargs)
+
+
+def test_search_jobs_pages_handles_missing_total(
+    monkeypatch: pytest.MonkeyPatch,
+    make_search_response_payload,
+    make_search_result_item,
+) -> None:
+    """Continue until a short page is returned when total counts are absent."""
+
+    first_page = SearchEndpoint.Response.model_validate(
+        make_search_response_payload(
+            items=[
+                make_search_result_item(matched_object_id=1),
+                make_search_result_item(matched_object_id=2),
+            ],
+            count=2,
+            include_total=False,
+        )
+    )
+    final_page = SearchEndpoint.Response.model_validate(
+        make_search_response_payload(
+            items=[make_search_result_item(matched_object_id=3)],
+            count=1,
+        )
+    )
+
+    responses = [first_page, final_page]
+    captured_kwargs: list[dict[str, object]] = []
+
+    def fake_search(self, **call_kwargs):
+        captured_kwargs.append(call_kwargs)
+        return responses.pop(0)
+
+    monkeypatch.setattr(USAJobsClient, "search_jobs", fake_search)
+
+    client = USAJobsClient()
+    pages = list(client.search_jobs_pages(keyword="space"))
+
+    assert len(pages) == 2
+    assert [call["page"] for call in captured_kwargs] == [1, 2]
+    assert "results_per_page" not in captured_kwargs[0]
+    assert captured_kwargs[1]["results_per_page"] == 2
+
+
+def test_search_jobs_pages_breaks_on_empty_results(
+    monkeypatch: pytest.MonkeyPatch,
+    make_search_response_payload,
+) -> None:
+    """Stop pagination when a page returns no results."""
+
+    empty_page = SearchEndpoint.Response.model_validate(
+        make_search_response_payload(items=[], count=0, include_total=False)
+    )
+
+    def fake_search(self, **_):
+        return empty_page
+
+    monkeypatch.setattr(USAJobsClient, "search_jobs", fake_search)
+
+    client = USAJobsClient()
+    pages = list(client.search_jobs_pages(keyword="empty"))
+
+    assert len(pages) == 1
+
+
+# test search_jobs_items
+# ---
+
+
+def test_search_jobs_items_yields_jobs(
+    monkeypatch: pytest.MonkeyPatch,
+    make_search_response_payload,
+    make_search_result_item,
+) -> None:
+    """Ensure search_jobs_items yields summaries across pages."""
+
+    client = USAJobsClient()
+
+    payloads = [
+        make_search_response_payload(
+            items=[
+                make_search_result_item(matched_object_id=1),
+                make_search_result_item(matched_object_id=2),
+            ],
+            count=2,
+            total=3,
+            page=1,
+            results_per_page=2,
+        ),
+        make_search_response_payload(
+            items=[make_search_result_item(matched_object_id=3)],
+            count=1,
+            total=3,
+            page=2,
+            results_per_page=2,
+        ),
+    ]
+
+    def fake_search_jobs(self, **_):
+        return SearchEndpoint.Response.model_validate(payloads.pop(0))
+
+    monkeypatch.setattr(USAJobsClient, "search_jobs", fake_search_jobs)
+
+    summaries = list(client.search_jobs_items(results_per_page=2))
+
+    assert [summary.id for summary in summaries] == [1, 2, 3]
+
 
 # test historic_joa_pages
 # ---
 
 
 def test_historic_joa_pages_yields_pages(
-    monkeypatch, historicjoa_response_payload
+    monkeypatch: pytest.MonkeyPatch,
+    make_historicjoa_response_payload,
 ) -> None:
     """Ensure historic_joa_pages yields pages while forwarding continuation tokens."""
 
-    first_payload = deepcopy(historicjoa_response_payload)
-    second_payload = deepcopy(historicjoa_response_payload)
-    second_payload["paging"]["metadata"]["continuationToken"] = None
-    second_payload["data"] = []
-
     responses = [
-        HistoricJoaEndpoint.Response.model_validate(first_payload),
-        HistoricJoaEndpoint.Response.model_validate(second_payload),
+        HistoricJoaEndpoint.Response.model_validate(
+            make_historicjoa_response_payload()
+        ),
+        HistoricJoaEndpoint.Response.model_validate(
+            make_historicjoa_response_payload(
+                continuation_token=None,
+                items=[],
+                next_url=None,
+            )
+        ),
     ]
-    captured_kwargs = []
+    captured_kwargs: list[dict[str, object]] = []
 
     def fake_historic_joa(self, **call_kwargs):
         captured_kwargs.append(call_kwargs)
         return responses.pop(0)
 
-    monkeypatch.setattr(USAJobsApiClient, "historic_joa", fake_historic_joa)
+    monkeypatch.setattr(USAJobsClient, "historic_joa", fake_historic_joa)
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
 
     pages = list(
         client.historic_joa_pages(
@@ -51,28 +217,29 @@ def test_historic_joa_pages_yields_pages(
 
 
 def test_historic_joa_pages_duplicate_token(
-    monkeypatch, historicjoa_response_payload
+    monkeypatch: pytest.MonkeyPatch,
+    make_historicjoa_response_payload,
 ) -> None:
     """Duplicate continuation tokens should raise to avoid infinite loops."""
 
     first_response = HistoricJoaEndpoint.Response.model_validate(
-        historicjoa_response_payload
-    )
-    duplicate_payload = deepcopy(historicjoa_response_payload)
-    duplicate_payload["paging"]["metadata"]["continuationToken"] = (
-        first_response.next_token()
+        make_historicjoa_response_payload()
     )
     responses = [
         first_response,
-        HistoricJoaEndpoint.Response.model_validate(duplicate_payload),
+        HistoricJoaEndpoint.Response.model_validate(
+            make_historicjoa_response_payload(
+                continuation_token=first_response.next_token()
+            )
+        ),
     ]
 
     def fake_historic_joa(self, **_):
         return responses.pop(0)
 
-    monkeypatch.setattr(USAJobsApiClient, "historic_joa", fake_historic_joa)
+    monkeypatch.setattr(USAJobsClient, "historic_joa", fake_historic_joa)
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
     iterator = client.historic_joa_pages()
 
     assert next(iterator)
@@ -85,75 +252,35 @@ def test_historic_joa_pages_duplicate_token(
 
 
 def test_historic_joa_items_yields_items_across_pages(
-    monkeypatch: pytest.MonkeyPatch, historicjoa_response_payload
+    monkeypatch: pytest.MonkeyPatch,
+    make_historicjoa_response_payload,
+    make_historicjoa_item,
 ) -> None:
     """Ensure historic_joa_items yields items and follows continuation tokens."""
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
 
-    first_page = deepcopy(historicjoa_response_payload)
-    first_page["paging"]["metadata"]["continuationToken"] = "TOKEN2"
-    first_page["data"] = first_page["data"][:2]
-
-    second_page = {
-        "paging": {
-            "metadata": {"totalCount": 3, "pageSize": 1, "continuationToken": None},
-            "next": None,
-        },
-        "data": [
-            {
-                "usajobsControlNumber": 111222333,
-                "hiringAgencyCode": "GSA",
-                "hiringAgencyName": "General Services Administration",
-                "hiringDepartmentCode": "GSA",
-                "hiringDepartmentName": "General Services Administration",
-                "agencyLevel": 1,
-                "agencyLevelSort": "GSA",
-                "appointmentType": "Permanent",
-                "workSchedule": "Full-time",
-                "payScale": "GS",
-                "salaryType": "Per Year",
-                "vendor": "USASTAFFING",
-                "travelRequirement": "Not required",
-                "teleworkEligible": "Y",
-                "serviceType": "Competitive",
-                "securityClearanceRequired": "N",
-                "securityClearance": "Not Required",
-                "whoMayApply": "All",
-                "announcementClosingTypeCode": "C",
-                "announcementClosingTypeDescription": "Closing Date",
-                "positionOpenDate": "2020-05-01",
-                "positionCloseDate": "2020-05-15",
-                "positionExpireDate": None,
-                "announcementNumber": "GSA-20-001",
-                "hiringSubelementName": "Administration",
-                "positionTitle": "Systems Analyst",
-                "minimumGrade": "11",
-                "maximumGrade": "12",
-                "promotionPotential": "13",
-                "minimumSalary": 85000.0,
-                "maximumSalary": 95000.0,
-                "supervisoryStatus": "N",
-                "drugTestRequired": "N",
-                "relocationExpensesReimbursed": "N",
-                "totalOpenings": "2",
-                "disableApplyOnline": "N",
-                "positionOpeningStatus": "Accepting Applications",
-                "hiringPaths": [{"hiringPath": "The public"}],
-                "jobCategories": [{"series": "2210"}],
-                "positionLocations": [
-                    {
-                        "positionLocationCity": "Washington",
-                        "positionLocationState": "District of Columbia",
-                        "positionLocationCountry": "United States",
-                    }
-                ],
-            }
+    first_page = make_historicjoa_response_payload(continuation_token="TOKEN2")
+    second_page = make_historicjoa_response_payload(
+        items=[
+            make_historicjoa_item(
+                base=0,
+                usajobsControlNumber=111222333,
+                hiringAgencyCode="GSA",
+                hiringAgencyName="General Services Administration",
+                hiringDepartmentCode="GSA",
+                hiringDepartmentName="General Services Administration",
+                positionTitle="Systems Analyst",
+            )
         ],
-    }
+        continuation_token=None,
+        total_count=3,
+        page_size=1,
+        next_url=None,
+    )
 
     responses = [first_page, second_page]
-    calls = []
+    calls: list[dict[str, object]] = []
 
     def fake_historic(**call_kwargs):
         calls.append(call_kwargs)
@@ -174,16 +301,15 @@ def test_historic_joa_items_yields_items_across_pages(
 
 
 def test_historic_joa_items_respects_initial_token(
-    monkeypatch: pytest.MonkeyPatch, historicjoa_response_payload
+    monkeypatch: pytest.MonkeyPatch,
+    make_historicjoa_response_payload,
 ) -> None:
     """Ensure historic_joa_items uses the supplied initial continuation token."""
 
-    client = USAJobsApiClient()
+    client = USAJobsClient()
 
-    payload = deepcopy(historicjoa_response_payload)
-    payload["paging"]["metadata"]["continuationToken"] = None
-
-    calls = []
+    payload = make_historicjoa_response_payload(continuation_token=None)
+    calls: list[dict[str, object]] = []
 
     def fake_historic(**call_kwargs):
         calls.append(call_kwargs)
