@@ -1,11 +1,11 @@
 site_name: python-usajobsapi
-site_url: https://python-usajobsapi.github.io/
+site_url: https://paddy74.github.io/python-usajobsapi/
 site_description: Project documentation for python-usajobsapi
 
 site_dir: ../site
 
 repo_url: https://github.com/paddy74/python-usajobsapi/
-edit_uri: blob/master/docs/
+edit_uri: blob/main/docs/
 
 theme:
   name: readthedocs
