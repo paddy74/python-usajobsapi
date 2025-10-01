@@ -6,7 +6,7 @@ on:
     branches: ["main"]
 
 jobs:
-  check_files:
+  changes:
     name: Detect relevant file changes
     runs-on: ubuntu-latest
     outputs:
@@ -35,10 +35,12 @@ jobs:
       - uses: ./.github/actions/python-post
 
   test:
-    if: needs.changes.outputs.test == 'true'
     needs: changes
+    if: needs.changes.outputs.test == 'true'
     name: Test Python
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - uses: actions/checkout@v5
@@ -49,18 +51,18 @@ jobs:
       - uses: ./.github/actions/python-post
 
       - name: Warn if CODECOV_TOKEN is missing
-        if: ${{ !cancelled() && !secrets.CODECOV_TOKEN }}
+        if: ${{ !cancelled() && env.CODECOV_TOKEN == '' }}
         run: printf "%s\n" "::warning::CODECOV_TOKEN secret not set; skipping Codecov uploads."
 
       - name: Upload coverage to Codecov
-        if: ${{ !cancelled() && secrets.CODECOV_TOKEN }}
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ env.CODECOV_TOKEN }}
         env:
           CODECOV_STATUS: "project=default:threshold=80 patch=default:threshold=80"
       - name: Upload test results to Codecov
-        if: ${{ !cancelled() && secrets.CODECOV_TOKEN }}
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
         uses: codecov/test-results-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ env.CODECOV_TOKEN }}
