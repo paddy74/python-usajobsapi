@@ -32,6 +32,11 @@
     },
     {
       "matchManagers": ["pep621"],
+      "matchDepTypes": ["dependencies"],
+      "semanticCommitType": "build"
+    },
+    {
+      "matchManagers": ["pep621"],
       "postUpgradeTasks": {
         "commands": [
           "python -m pip install --upgrade pip",
