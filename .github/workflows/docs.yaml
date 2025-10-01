@@ -5,6 +5,16 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  push:
+    # on change to watched file(s)
+    branches: [main]
+    paths:
+      - mkdocs/**
+      - mkdocs_external_files/**
+      - usajobsapi/**/*.py
+      - README.md
+      - CHANGELOG.md
+      - LICENSE
   pull_request:
     branches: [main] # PR verification only (base=main)
   release:
@@ -31,17 +41,39 @@ jobs:
       - uses: ./.github/actions/python-post
 
   publish:
-    if: github.event_name == 'release' && github.event.release.prerelease == false && github.event.release.draft == false && github.repository == 'paddy74/python-usajobsapi'
+    # on release or push to main
+    if: >-
+      github.repository == 'paddy74/python-usajobsapi' &&
+      (
+        (
+          github.event_name == 'release' &&
+          github.event.release.prerelease == false &&
+          github.event.release.draft == false
+        ) ||
+        (
+          github.event_name == 'push' &&
+          github.ref == 'refs/heads/main'
+        )
+      )
     name: Publish docs
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Check out release tag
+        if: github.event_name == 'release'
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name }}
+          persist-credentials: true
+
+      - name: Check out branch
+        if: github.event_name != 'release'
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
           persist-credentials: true
 
       - uses: ./.github/actions/python-init
