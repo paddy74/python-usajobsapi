@@ -1,0 +1,48 @@
+site_name: python-usajobsapi
+site_url: https://paddy74.github.io/python-usajobsapi/
+site_description: Project documentation for python-usajobsapi
+
+site_dir: ../site
+
+repo_url: https://github.com/paddy74/python-usajobsapi/
+edit_uri: blob/main/docs/
+
+theme:
+  name: readthedocs
+  locale: en
+  highlightjs: true
+
+nav:
+  - Home: index.md
+  - Reference: ref/
+  - About:
+      - Changelog: about/changelog.md
+      - License: about/license.md
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - gen_ref_pages.py
+  - literate-nav:
+      nav_file: NAV_REF.md
+  - section-index
+  - mkdocstrings
+  - external-files:
+      files:
+        - src: ../README.md
+          dest: README.md
+        - src: ../CHANGELOG.md
+          dest: about/changelog.md
+        - src: ../LICENSE
+          dest: about/license.md
+
+markdown_extensions:
+  - toc:
+      baselevel: 2
+
+hooks:
+  - hooks.py
+
+watch:
+  - ../usajobsapi/_version.py
