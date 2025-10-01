@@ -28,12 +28,17 @@ jobs:
         run: uv run pytest --cov=usajobsapi --cov-branch --cov-report=xml --junitxml=junit.xml tests
       - uses: ./.github/actions/python-post
 
+      - name: Warn if CODECOV_TOKEN is missing
+        if: ${{ !cancelled() && !secrets.CODECOV_TOKEN }}
+        run: printf "%s\n" "::warning::CODECOV_TOKEN secret not set; coverage will not be uploaded"
+
       - name: Upload coverage to Codecov
+        if: ${{ !cancelled() && secrets.CODECOV_TOKEN }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && secrets.CODECOV_TOKEN }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
