@@ -6,6 +6,23 @@ on:
     branches: ["main"]
 
 jobs:
+  check_files:
+    name: Detect relevant file changes
+    runs-on: ubuntu-latest
+    outputs:
+      test: ${{ steps.filter.outputs.test }}
+
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            test:
+              - 'usajobsapi/**'
+              - 'tests/**'
+              - 'pyproject.toml'
+              - '.github/workflows/ci.yaml'
+
   lint:
     name: Lint Python
     runs-on: ubuntu-latest
@@ -18,11 +35,14 @@ jobs:
       - uses: ./.github/actions/python-post
 
   test:
+    if: needs.changes.outputs.test == 'true'
+    needs: changes
     name: Test Python
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v5
+
       - uses: ./.github/actions/python-init
       - name: Run tests
         run: uv run pytest --cov=usajobsapi --cov-report=term-missing --cov-report=xml --junitxml=junit.xml tests
