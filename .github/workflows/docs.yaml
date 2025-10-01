@@ -65,7 +65,12 @@ jobs:
     name: Publish docs
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-pages.outputs.page_url }}
 
     steps:
       - name: Check out release tag
@@ -74,14 +79,12 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name }}
-          persist-credentials: true
 
       - name: Check out branch
         if: github.event_name == 'push'
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Resolve dispatch ref
         if: github.event_name == 'workflow_dispatch'
@@ -104,18 +107,20 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ steps.dispatch-ref.outputs.ref }}
-          persist-credentials: true
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
 
       - uses: ./.github/actions/python-init
+      - name: Build static site
+        run: uv run mkdocs build -f mkdocs/mkdocs.yaml
+      - uses: ./.github/actions/python-post
 
-      - name: Configure git user
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
 
       - name: Deploy to GitHub Pages
-        run: uv run mkdocs gh-deploy --force --clean --config-file mkdocs/mkdocs.yaml --remote-branch gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: ./.github/actions/python-post
+        id: deploy-pages
+        uses: actions/deploy-pages@v4
