@@ -87,8 +87,8 @@ Questions or issues? Please open an issue on the repository's issue tracker.
 [pypi-img]: https://img.shields.io/pypi/v/python-usajobsapi.svg
 [tests-lnk]: https://github.com/paddy74/python-usajobsapi/actions
 [tests-img]: https://img.shields.io/github/actions/workflow/status/paddy74/python-usajobsapi/ci.yaml?logo=github&label=tests&branch=master
-[codecov-lnk]: https://app.codecov.io/gh/paddy74/python-usajobsapi
-[codecov-img]: https://app.codecov.io/gh/paddy74/python-usajobsapi/coverage.svg
+[codecov-lnk]: https://codecov.io/github/paddy74/python-usajobsapi
+[codecov-img]: https://codecov.io/github/paddy74/python-usajobsapi/graph/badge.svg?token=IH3MTBANTT
 [python-lnk]: https://img.shields.io/pypi/pyversions/python-usajobsapi.svg
 [python-img]: https://pypi.python.org/pypi/python-usajobsapi
 [codestyle-lnk]: https://docs.astral.sh/ruff
