@@ -59,3 +59,19 @@ target-version = "py311"
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["usajobsapi"]
+relative_files = true
+
+[tool.coverage.paths]
+source = [
+    "usajobsapi",
+    "*/site-packages/usajobsapi",
+]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true
