@@ -36,6 +36,10 @@ plugins:
           dest: about/changelog.md
         - src: ../LICENSE
           dest: about/license.md
+        - src: ../CODE_OF_CONDUCT.md
+          dest: about/conduct.md
+        - src: ../SECURITY.md
+          dest: about/security.md
 
 markdown_extensions:
   - toc:
