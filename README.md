@@ -7,21 +7,30 @@
 [![Code Style][codestyle-img]][codestyle-lnk]
 [![Coverage Status][codecov-img]][codecov-lnk]
 
-A Python wrapper for the [USAJOBS REST API](https://developer.usajobs.gov/). The library aims to provide a simple interface for discovering and querying job postings from USAJOBS using Python.
+`python-usajobsapi` is a typed Python wrapper for the [USAJOBS REST API](https://developer.usajobs.gov/). The project provides a clean interface for discovering and querying job postings using Python.
 
-## Features
+## Status
 
-- Lightweight client for the USAJOBS REST API endpoints
-- Leverage type hinting and validation for endpoint parameters
-- Map endpoint results to Python objects
+This project is under active development and its API may change. Changes to the [USAJOBS REST API documentation](https://developer.usajobs.gov/) are monitored and incorporated on a best-effort basis. Feedback and ideas are appreciated.
+
+## Overview
+
+The USAJOBS REST API exposes a large catalog of job opportunity announcements (JOAs) with a complex query surface. This project focuses on providing:
+
+- Declarative endpoint definitions.
+- Strongly typed request/query parameters and response models.
+- Streaming helpers for paginating through large result sets.
+- Normalization of data formats (e.g., date handling, booleans, payload serialization).
 
 ### Supported Endpoints
 
-This package primarily aims to support searching and retrieval of active and past job listings. However, updates are planned to add support for all other documented endpoints.
+This package primarily aims to support searching and retrieval of active and past job listings. Coverage of all [documented endpoints](https://developer.usajobs.gov/api-reference/) will continue to be expanded.
 
 Currently, the following endpoints are supported:
 
 - [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search) (`/api/Search`)
+- [Historic JOA API](https://developer.usajobs.gov/api-reference/get-api-historicjoa) (`/api/HistoricJoa`)
+- Planned in [#6](https://github.com/paddy74/python-usajobsapi/issues/6) - [Announcement Text API](https://developer.usajobs.gov/api-reference/get-api-joa) (`/api/HistoricJoa/AnnouncementText`)
 
 ## Installation
 
@@ -45,37 +54,75 @@ cd python-usajobsapi
 pip install .
 ```
 
-## Usage
+## Quickstart
 
-Register for a USAJOBS API key and set a valid User-Agent before making requests.
+1. [Request USAJOBS API credentials](https://developer.usajobs.gov/APIRequest/Forms/DeveloperSignup) (Job Search API only).
+2. Instatiate the client (`USAJobsClient`) with your `User-Agent` (email) and API key.
+3. Perform a search:
 
 ```python
 from usajobsapi import USAJobsClient
 
 client = USAJobsClient(auth_user="name@example.com", auth_key="YOUR_API_KEY")
-results = client.search_jobs(keyword="data scientist", location_names=["Atlanta", "Georgia"]).search_result.jobs()
-for job in results:
+response = client.search_jobs(keyword="data scientist", location_names=["Atlanta", "Georgia"])
+
+for job in response.jobs():
     print(job.position_title)
 ```
+
+### Pagination
+
+### Handling pagination
+
+Use streaming helpers to to iterate through multiple pages or individual result items without needing to worry about pagination:
+
+```python
+for job in client.search_jobs_items(keyword="cybersecurity", results_per_page=100):
+    if "Remote" in (job.position_location_display or ""):
+        print(job.position_title, job.organization_name)
+```
+
+## Developer Guide
+
+Set up a development environment with [`uv`](https://docs.astral.sh/uv/):
+
+```bash
+uv sync --all-extras --dev
+uv run pytest tests
+uv run ruff check
+uv run ruff format
+```
+
+### Key Development Principles
+
+- Keep Pydantic models exhaustive and prefer descriptive field metadata so that auto-generated docs remain informative.
+- Maintain 100% passing tests, at least 80% test coverage, formatting, and linting before opening a pull request.
+- Update docstrings alongside code changes to keep the generated reference accurate.
 
 ## Contributing
 
 Contributions are welcome! To get started:
 
 1. Fork the repository and create a new branch.
-2. Create a virtual environment and install development dependencies.
-3. Run the test suite with `pytest` and ensure all tests pass.
-4. Submit a pull request describing your changes.
+2. Install development dependencies (see the [developer guide](#developer-guide)).
+3. Add or update tests together with your change.
+4. Run the full test, linting, and formatting suite locally.
+5. Submit a pull request describing your changes and referencing any relevant issues.
 
-Please open an issue first for major changes to discuss your proposal.
+For major changes, open an issue first to discuss your proposal.
+
+## Design
+
+The software design architecture prioritizes composability and strong typing, ensuring that it is straightforward to add/update endpoints and generate documentation from docstrings.
+
+- **Client session management**: `USAJobsClient` wraps a configurable `requests.Session` to reuse connections and centralize authentication headers.
+- **Declarative endpoints**: Each USAJOBS endpoint is expressed as a Pydantic model with nested `Params` and `Response` classes, providing validation, serialization helpers, and rich metadata for documentation.
+- **Pagination helpers**: Iterators (`search_jobs_pages` and `search_jobs_items`) encapsulate pagination logic and expose idiomatic Python iterators so users focus on data consumption, not page math.
+- **Shared utilities**: Shared utilities handle API-specific normalization (e.g., date parsing, alias mapping) so endpoint models stay declarative and thin.
 
 ## License
 
 Distributed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). See [LICENSE](LICENSE) for details.
-
-## Project Status
-
-This project is under active development and its API may change. Changes to the [USAJOBS REST API documentation](https://developer.usajobs.gov/) shall be monitored and incorporated into this project in a reasonable amount of time. Feedback and ideas are appreciated.
 
 ## Contact
 
