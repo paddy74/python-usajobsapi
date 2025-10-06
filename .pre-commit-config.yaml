@@ -4,12 +4,16 @@ repos:
     hooks:
       - id: check-added-large-files
       - id: check-merge-conflict
-      - id: check-json
       - id: check-yaml
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
+
+  - repo: https://gitlab.com/bmares/check-json5
+    rev: v1.0.0
+    hooks:
+      - id: check-json5
 
   # Handle undesirable unicode characters
   - repo: https://github.com/sirosen/texthooks
