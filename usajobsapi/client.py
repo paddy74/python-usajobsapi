@@ -1,4 +1,10 @@
-"""Wrapper for the USAJOBS REST API."""
+"""
+Wrapper for the USAJOBS REST API.
+
+Use the high-level client to manage authentication headers and make strongly typed requests to individual endpoints. The models documented below are auto-generated from the runtime code so every parameter, default, and helper stays in sync with the library.
+
+To execute a query, pair the [`USAJobsClient`](#usajobsapi.client.USAJobsClient) with any of the endpoint payloads (query parameters) under [usajobsapi.endpoints](#usajobsapi.endpoints) such as [`SearchEndpoint.Params`](#usajobsapi.endpoints.search.SearchEndpoint).
+"""
 
 from collections.abc import Iterator
 from typing import Dict, Optional

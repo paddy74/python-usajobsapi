@@ -1,4 +1,8 @@
-"""Helper utility functions."""
+"""
+Helper utility functions.
+
+Shared helpers keep endpoint payloads consistent and ergonomic. These utilities handle normalization, serialization, and data validation used throughout the client and endpoint models.
+"""
 
 import datetime as dt
 from enum import Enum

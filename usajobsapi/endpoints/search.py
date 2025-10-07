@@ -1,4 +1,12 @@
-"""Wrapper for the Job Search API."""
+"""
+Wrapper for the Job Search API.
+
+The search endpoint wraps the core USAJOBS Job Search API. Enumerations describe allowed query values, the nested `Params` model validates input, and the response graph mirrors the payload returned from the API.
+
+- Filter inputs such as [`Params.hiring_path`](usajobsapi.endpoints.search.SearchEndpoint.Params.hiring_path) and [`Params.pay_grade_high`](usajobsapi.endpoints.search.SearchEndpoint.Params.pay_grade_high) are surfaced in [`Response.params`](usajobsapi.endpoints.search.SearchEndpoint.Response.params) so you can inspect what was sent to USAJOBS.
+- Each [`JOAItem`](usajobsapi.endpoints.search.SearchEndpoint.JOAItem) contains a [`JOADescriptor`](usajobsapi.endpoints.search.SearchEndpoint.JOADescriptor) with rich metadata like [`PositionRemuneration`](usajobsapi.endpoints.search.SearchEndpoint.PositionRemuneration) that aligns with the `SearchEndpoint.Params` salary filters.
+- `Response.jobs()` returns the flattened list of [`JOAItem`](usajobsapi.endpoints.search.SearchEndpoint.JOAItem) instances to iterate over the same objects delivered in [`SearchResult.items`](usajobsapi.endpoints.search.SearchEndpoint.SearchResult.items).
+"""
 
 from __future__ import annotations
 

@@ -87,7 +87,7 @@ for job in client.search_jobs_items(keyword="cybersecurity", results_per_page=10
 Set up a development environment with [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
-uv sync --all-extras --dev
+uv sync --all-extras --all-groups
 uv run pytest tests
 uv run ruff check
 uv run ruff format
@@ -98,6 +98,17 @@ uv run ruff format
 - Keep Pydantic models exhaustive and prefer descriptive field metadata so that auto-generated docs remain informative.
 - Maintain 100% passing tests, at least 80% test coverage, formatting, and linting before opening a pull request.
 - Update docstrings alongside code changes to keep the generated reference accurate.
+
+### Document Generation
+
+Documentation is generated using [MkDocs](https://www.mkdocs.org/). The technical reference surfaces the reStructuredText style docstrings from the package's source code.
+
+```bash
+# Run the development server
+uv run mkdocs serve -f mkdocs/mkdocs.yaml
+# Build the static site
+uv run mkdocs build -f mkdocs/mkdocs.yaml
+```
 
 ## Contributing
 
