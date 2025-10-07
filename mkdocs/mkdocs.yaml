@@ -27,7 +27,11 @@ plugins:
   - literate-nav:
       nav_file: NAV_REF.md
   - section-index
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: sphinx
   - external-files:
       files:
         - src: ../README.md
