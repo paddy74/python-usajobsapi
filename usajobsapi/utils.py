@@ -31,7 +31,7 @@ def _normalize_date(value: None | dt.datetime | dt.date | str) -> Optional[dt.da
 
 
 def _normalize_yn_bool(value: None | bool | str) -> Optional[bool]:
-    """Normalize "Y"/"N" to `bool`."""
+    """Normalize `"Y"`/`"N"` to `bool`."""
 
     if value is None:
         return None
@@ -84,9 +84,9 @@ def _normalize_param(value: Any) -> Optional[str]:
 def _dump_by_alias(model: BaseModel) -> Dict[str, str]:
     """Dump a Pydantic model to a query-param dict using the model's field aliases and USAJOBS formatting rules (lists + bools).
 
-    :param model: _description_
+    :param model: Pydantic model instance to export using field aliases
     :type model: BaseModel
-    :return: _description_
+    :return: Mapping of alias names to normalized parameter values
     :rtype: Dict[str, str]
     """
     # Use the API's wire names and drop `None`s
@@ -106,13 +106,13 @@ def _is_inrange(n: int | float, lower: int | float, upper: int | float):
 
     A closed interval [a, b] represents the set of all real numbers greater or equal to a and less or equal to b.
 
-    :param n: _description_
+    :param n: Value to check
     :type n: int
-    :param lower: _description_
+    :param lower: Lower bound of the interval
     :type lower: int
-    :param upper: _description_
+    :param upper: Upper bound of the interval
     :type upper: int
-    :return: _description_
-    :rtype: _type_
+    :return: `True` if the value falls inside the closed interval `[lower, upper]`
+    :rtype: bool
     """
     return n >= lower and n <= upper

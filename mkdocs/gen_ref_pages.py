@@ -11,15 +11,13 @@ logger = logging.getLogger(__name__)
 def gen_ref_pages(root_dir: Path, source_dir: Path, output_dir: str | Path) -> None:
     """Emit mkdocstrings-compatible reference pages and navigation entries.
 
-    :param root_dir: _description_
+    :param root_dir: Project root directory used to resolve edit links
     :type root_dir: Path
-    :param source_dir: _description_
+    :param source_dir: Directory containing the Python packages to document
     :type source_dir: Path
     :param output_dir: Output directory for the generated files; must be relative (non-escaping) to the docs directory.
     :type output_dir: str | Path
-    :raises ValueError: _description_
-    :raises ValueError: _description_
-    :raises ValueError: _description_
+    :raises ValueError: If `output_dir` is absolute, escapes the docs directory, or no Python modules are found
     """
 
     # output_dir must be a relative, non-escaping path
