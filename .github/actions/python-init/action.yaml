@@ -14,5 +14,5 @@ runs:
         enable-cache: true
 
     - name: Install the project
-      run: uv sync --locked --all-extras --dev
+      run: uv sync --locked --all-extras --all-groups
       shell: bash

@@ -104,6 +104,8 @@ uv run ruff format
 Documentation is generated using [MkDocs](https://www.mkdocs.org/). The technical reference surfaces the reStructuredText style docstrings from the package's source code.
 
 ```bash
+uv sync --group docs
+
 # Run the development server
 uv run mkdocs serve -f mkdocs/mkdocs.yaml
 # Build the static site
