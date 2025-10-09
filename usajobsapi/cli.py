@@ -1,8 +1,7 @@
 """
 Command line interface for the python-usajobsapi package.
 
-This module builds the argument parser that powers the `usajobsapi`
-executable, handling global configuration common to every subcommand.
+This module powers the `usajobsapi` executable, so that a user can query the exposed endpoints from the command line.
 """
 
 from __future__ import annotations
@@ -41,7 +40,7 @@ def _parse_json(value: str) -> dict[str, Any]:
     return parsed
 
 
-def build_parser() -> argparse.ArgumentParser:
+def _build_parser() -> argparse.ArgumentParser:
     """Create the top-level argument parser for the CLI."""
     client_defaults = USAJobsClient()
     parser = argparse.ArgumentParser(
@@ -113,7 +112,7 @@ def main() -> None:
         print(pkg_version)
         sys.exit(0)
 
-    parser = build_parser()
+    parser = _build_parser()
     args = parser.parse_args()
 
     client = USAJobsClient(

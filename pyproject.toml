@@ -17,6 +17,9 @@ dynamic = ["version"]
 [project.optional-dependencies]
 build = ["uv ~= 0.8.17"]
 
+[project.scripts]
+usajobsapi = "usajobsapi.cli:main"
+
 [tool.uv.sources]
 mkdocs_external_files = { path = "mkdocs/mkdocs_external_files" }
 
