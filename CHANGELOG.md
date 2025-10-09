@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.0.0 (2025-10-09)
+
+### Features
+
+- Commit version 1.0.0
+  ([`5487c07`](https://github.com/paddy74/python-usajobsapi/commit/5487c0723e5aa796d0b1a5580ce2b13978ed2ce8))
+
+
 ## v0.3.0 (2025-10-09)
 
 ### Chores
