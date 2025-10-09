@@ -76,16 +76,17 @@ def test_parse_json_valid_object() -> None:
     assert payload == {"foo": "bar"}
 
 
-def test_parse_json_invalid_json() -> None:
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "{invalid",
+        '["not", "an", "object"]',
+    ],
+)
+def test_parse_json_invalid_inputs(raw: str) -> None:
     """Invalid JSON strings raise argparse errors."""
     with pytest.raises(argparse.ArgumentTypeError):
-        cli._parse_json("{invalid")
-
-
-def test_parse_json_requires_object() -> None:
-    """Only JSON objects are accepted as CLI payloads."""
-    with pytest.raises(argparse.ArgumentTypeError):
-        cli._parse_json('["not", "an", "object"]')
+        cli._parse_json(raw)
 
 
 def test_build_parser_defaults() -> None:
