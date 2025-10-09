@@ -102,19 +102,17 @@ class USAJobsClient:
         resp.raise_for_status()
         return resp
 
-    def announcement_text(self, **kwargs) -> AnnouncementTextEndpoint.Response:
+    def announcement_text(
+        self, **kwargs
+    ) -> AnnouncementTextEndpoint.Response:  # pragma: no cover
         """Query the Announcement Text API.
 
         :return: Deserialized announcement text response
         :rtype: AnnouncementTextEndpoint.Response
         """
-        params = AnnouncementTextEndpoint.Params(**kwargs)
-        resp = self._request(
-            AnnouncementTextEndpoint.model_fields["method"].default,
-            AnnouncementTextEndpoint.model_fields["path"].default,
-            params.to_params(),
+        raise NotImplementedError(
+            "Announcement Text endpoint support is not yet implemented."
         )
-        return AnnouncementTextEndpoint.Response.model_validate(resp.json())
 
     def search_jobs(self, **kwargs) -> SearchEndpoint.Response:
         """Query the [Job Search API](https://developer.usajobs.gov/api-reference/get-api-search).

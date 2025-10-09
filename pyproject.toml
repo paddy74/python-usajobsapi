@@ -20,6 +20,12 @@ build = ["uv ~= 0.8.17"]
 [project.scripts]
 usajobsapi = "usajobsapi.cli:main"
 
+[project.urls]
+Homepage = "https://paddy74.github.io/python-usajobsapi/"
+Changelog = "https://paddy74.github.io/python-usajobsapi/about/changelog/"
+Documentation = "https://paddy74.github.io/python-usajobsapi/"
+Source = "https://github.com/paddy74/python-usajobsapi/"
+
 [tool.uv.sources]
 mkdocs_external_files = { path = "mkdocs/mkdocs_external_files" }
 

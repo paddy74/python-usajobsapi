@@ -3,7 +3,6 @@
 [![PyPI][pypi-img]][pypi-lnk]
 [![License][license-img]][license-lnk]
 [![Tests][tests-img]][tests-lnk]
-[![Python][python-img]][python-lnk]
 [![Code Style][codestyle-img]][codestyle-lnk]
 [![Coverage Status][codecov-img]][codecov-lnk]
 
@@ -82,6 +81,27 @@ for job in client.search_jobs_items(keyword="cybersecurity", results_per_page=10
         print(job.position_title, job.organization_name)
 ```
 
+### Command Line Interface
+
+You can call the package as an executable using the `usajobsapi` command. Run `usajobsapi --help` to see the exposed arguments.
+
+The first argument maps to a specific endpoint:
+
+| Action             | USAJOBS REST API Endpoint                             |
+| ------------------ | ----------------------------------------------------- |
+| `announcementtext` | Announcement Text `/api/historicjoa/announcementtext` |
+| `search`           | Job Search `/api/search`                              |
+| `historicjoa`      | Historic JOA `/api/historicjoa                        |
+
+Query parameters are supplied with `-d/--data` as a JSON object:
+
+```bash
+usajobsapi search \
+  --user-agent "you@example.com" \
+  --auth-key "$USAJOBS_API_KEY" \
+  -d '{"keyword": "data scientist", "results_per_page": 5}'
+```
+
 ## Developer Guide
 
 Set up a development environment with [`uv`](https://docs.astral.sh/uv/):
@@ -149,8 +169,6 @@ Questions or issues? Please open an issue on the repository's issue tracker.
 [tests-img]: https://img.shields.io/github/actions/workflow/status/paddy74/python-usajobsapi/ci.yaml?logo=github&label=tests&branch=master
 [codecov-lnk]: https://codecov.io/github/paddy74/python-usajobsapi
 [codecov-img]: https://codecov.io/github/paddy74/python-usajobsapi/graph/badge.svg?token=IH3MTBANTT
-[python-lnk]: https://img.shields.io/pypi/pyversions/python-usajobsapi.svg
-[python-img]: https://pypi.python.org/pypi/python-usajobsapi
 [codestyle-lnk]: https://docs.astral.sh/ruff
 [codestyle-img]: https://img.shields.io/badge/code%20style-ruff-000000.svg
 [license-lnk]: ./LICENSE

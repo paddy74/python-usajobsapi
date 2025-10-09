@@ -14,8 +14,12 @@ from usajobsapi.utils import _dump_by_alias
 
 
 class AnnouncementTextEndpoint(BaseModel):
-    method: str = "GET"
-    path: str = "/api/historicjoa/announcementtext"
+    """
+    Declarative wrapper around the [Announcement Text API](https://developer.usajobs.gov/api-reference/get-api-announcementtext).
+    """
+
+    METHOD: str = "GET"
+    PATH: str = "/api/historicjoa/announcementtext"
 
     class Params(BaseModel):
         def to_params(self) -> Dict[str, str]:
