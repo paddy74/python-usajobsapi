@@ -1,4 +1,10 @@
-"""Wrapper for the Announcement Text API."""
+"""
+Wrapper for the Announcement Text API.
+
+Fetch the rendered job announcement text for a single job opportunity announcement.
+
+Pair this endpoint with a control number discovered from [`SearchEndpoint.JOAItem`][usajobsapi.endpoints.search.SearchEndpoint.JOAItem] to pull the full HTML description.
+"""
 
 from typing import Dict
 

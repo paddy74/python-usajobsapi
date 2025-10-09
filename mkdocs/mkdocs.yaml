@@ -18,6 +18,8 @@ nav:
   - About:
       - Changelog: about/changelog.md
       - License: about/license.md
+      - Code of Conduct: about/conduct.md
+      - Security Policy: about/security.md
 
 plugins:
   - search
@@ -27,11 +29,15 @@ plugins:
   - literate-nav:
       nav_file: NAV_REF.md
   - section-index
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: sphinx
   - external-files:
       files:
         - src: ../README.md
-          dest: README.md
+          dest: index.md
         - src: ../CHANGELOG.md
           dest: about/changelog.md
         - src: ../LICENSE

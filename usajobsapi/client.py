@@ -1,4 +1,10 @@
-"""Wrapper for the USAJOBS REST API."""
+"""
+Wrapper for the USAJOBS REST API.
+
+Use the high-level client to manage authentication headers and make strongly typed requests to individual endpoints. The models documented below are auto-generated from the runtime code so every parameter, default, and helper stays in sync with the library.
+
+To execute a query, pair the [`USAJobsClient`][usajobsapi.client.USAJobsClient] with any of the endpoint payload models provided in the [`endpoints` module][usajobsapi.endpoints], such as [`SearchEndpoint.Params`][usajobsapi.endpoints.search.SearchEndpoint.Params].
+"""
 
 from collections.abc import Iterator
 from typing import Dict, Optional
@@ -36,7 +42,7 @@ class USAJobsClient:
         :type auth_user: str | None, optional
         :param auth_key: API key used for the Job Search API, defaults to None
         :type auth_key: str | None, optional
-        :param session: _description_, defaults to None
+        :param session: Session to reuse for HTTP connections, defaults to None
         :type session: requests.Session | None, optional
         """
         self._url = url
@@ -99,7 +105,7 @@ class USAJobsClient:
     def announcement_text(self, **kwargs) -> AnnouncementTextEndpoint.Response:
         """Query the Announcement Text API.
 
-        :return: _description_
+        :return: Deserialized announcement text response
         :rtype: AnnouncementTextEndpoint.Response
         """
         params = AnnouncementTextEndpoint.Params(**kwargs)
@@ -197,7 +203,7 @@ class USAJobsClient:
     def historic_joa(self, **kwargs) -> HistoricJoaEndpoint.Response:
         """Query the Historic JOAs API.
 
-        :return: _description_
+        :return: Deserialized historic job announcement response
         :rtype: HistoricJoaEndpoint.Response
         """
         params = HistoricJoaEndpoint.Params(**kwargs)

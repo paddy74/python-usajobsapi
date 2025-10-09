@@ -1,4 +1,14 @@
-"""Wrapper for the Job Search API."""
+"""
+Wrapper for the Job Search API.
+
+The search endpoint wraps the core USAJOBS Job Search API. Enumerations describe allowed
+query values, the nested [`Params`][usajobsapi.endpoints.search.SearchEndpoint.Params] model validates input, and the response graph mirrors
+the payload returned from the API.
+
+- Filter inputs such as [`hiring_path`][usajobsapi.endpoints.search.SearchEndpoint.Params] and [`pay_grade_high`][usajobsapi.endpoints.search.SearchEndpoint.Params] are surfaced in a [search result's `params` field][usajobsapi.endpoints.search.SearchEndpoint.Response] so you can inspect what was sent to USAJOBS.
+- Each [`JOAItem`][usajobsapi.endpoints.search.SearchEndpoint.JOAItem] contains a [`JOADescriptor`][usajobsapi.endpoints.search.SearchEndpoint.JOADescriptor] with rich metadata (for example, [`PositionRemuneration`][usajobsapi.endpoints.search.SearchEndpoint.PositionRemuneration]) that aligns with the salary filter parameters.
+- [`SearchEndpoint.Response.jobs`][usajobsapi.endpoints.search.SearchEndpoint.Response.jobs] returns the flattened list of [`JOAItem`][usajobsapi.endpoints.search.SearchEndpoint.JOAItem] instances that correspond to the [`items`][usajobsapi.endpoints.search.SearchEndpoint.SearchResult] in the response payload.
+"""
 
 from __future__ import annotations
 
@@ -377,7 +387,7 @@ class SearchEndpoint(BaseModel):
         def _check_min_le_max(
             cls, v: Optional[int], info: ValidationInfo
         ) -> Optional[int]:
-            """Validate that renumeration max is >= renumeration min."""
+            """Validate that remuneration max is >= remuneration min."""
             mn = info.data.get("remuneration_min")
             if v is not None and mn is not None and v < mn:
                 raise ValueError(
