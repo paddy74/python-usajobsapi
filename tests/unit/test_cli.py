@@ -90,7 +90,7 @@ def test_parse_json_requires_object() -> None:
 
 def test_build_parser_defaults() -> None:
     """The parser should expose the expected default values."""
-    parser = cli.build_parser()
+    parser = cli._build_parser()
     args = parser.parse_args([cli.ACTIONS.TEXT.value])
 
     assert args.action == cli.ACTIONS.TEXT
@@ -104,7 +104,7 @@ def test_build_parser_defaults() -> None:
 
 def test_build_parser_custom_overrides() -> None:
     """Custom overrides should populate their respective fields."""
-    parser = cli.build_parser()
+    parser = cli._build_parser()
     payload = {"keyword": "python"}
     args = parser.parse_args(
         [
