@@ -3,9 +3,9 @@ Wrapper for the Historic JOAs API.
 
 Access archived job opportunity announcements with date filters, control numbers, and hiring-organization metadata.
 
-- Feed a control number captured from `SearchEndpoint.JOAItem.id` into `HistoricJoaEndpoint.Params.usajobs_control_numbers` to retrieve historical records for the same posting.
-- Date filters such as `HistoricJoaEndpoint.Params.start_position_open_date` normalize strings via :func:`usajobsapi.utils._normalize_date` and are reflected back in `Item.position_open_date`.
-- Boolean indicators rely on `usajobsapi.utils._normalize_yn_bool`.
+- Feed a control number captured from a [search result item's `id`][usajobsapi.endpoints.search.SearchEndpoint.JOAItem] into [`usajobs_control_numbers`][usajobsapi.endpoints.historicjoa.HistoricJoaEndpoint.Params] to retrieve historical records for the same posting.
+- Date filters such as [`start_position_open_date`][usajobsapi.endpoints.historicjoa.HistoricJoaEndpoint.Params] normalize strings as `datetime.date` objects and are reflected back in a response's `position_open_date`.
+- Boolean indicators rely on normalization validators to handle the API's inconsistent input/output formats for booleans.
 """
 
 import datetime as dt
