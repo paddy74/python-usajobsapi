@@ -165,8 +165,8 @@ Questions or issues? Please open an issue on the repository's issue tracker.
 
 [pypi-lnk]: https://pypi.org/p/python-usajobsapi
 [pypi-img]: https://img.shields.io/pypi/v/python-usajobsapi.svg
-[tests-lnk]: https://github.com/paddy74/python-usajobsapi/actions
-[tests-img]: https://img.shields.io/github/actions/workflow/status/paddy74/python-usajobsapi/ci.yaml?logo=github&label=tests&branch=master
+[tests-lnk]: https://github.com/paddy74/python-usajobsapi/actions/workflows/ci.yaml
+[tests-img]: https://img.shields.io/github/actions/workflow/status/paddy74/python-usajobsapi/ci.yaml?logo=github&label=tests&branch=main
 [codecov-lnk]: https://codecov.io/github/paddy74/python-usajobsapi
 [codecov-img]: https://codecov.io/github/paddy74/python-usajobsapi/graph/badge.svg?token=IH3MTBANTT
 [codestyle-lnk]: https://docs.astral.sh/ruff

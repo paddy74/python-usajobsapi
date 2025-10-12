@@ -7,6 +7,7 @@ name = "python-usajobsapi"
 description = "A Python wrapper for the USA Jobs REST API."
 readme = "README.md"
 requires-python = ">=3.11"
+keywords = ["api", "wrapper"]
 license = {file = "LICENSE"}
 dependencies = [
     "pydantic>=2.11.7",
@@ -37,7 +38,7 @@ packages = ["usajobsapi"]
 [dependency-groups]
 dev = [
     "pre-commit>=4.3.0",
-    "pytest>=8.4.1",
+    "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.12.11",
 ]

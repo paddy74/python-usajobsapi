@@ -32,7 +32,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          selection:
+          options:
             docstring_style: sphinx
   - external-files:
       files:
