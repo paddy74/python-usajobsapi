@@ -27,9 +27,6 @@ Changelog = "https://paddy74.github.io/python-usajobsapi/about/changelog/"
 Documentation = "https://paddy74.github.io/python-usajobsapi/"
 Source = "https://github.com/paddy74/python-usajobsapi/"
 
-[tool.uv.sources]
-mkdocs_external_files = { path = "mkdocs/mkdocs_external_files" }
-
 [tool.hatch.version]
 path = "usajobsapi/_version.py"
 [tool.hatch.build.targets.wheel]
@@ -43,7 +40,7 @@ dev = [
     "ruff>=0.12.11",
 ]
 docs = [
-    "mkdocs-external-files",
+    "mkdocs-extrafiles>=1.0.0",
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.2",
     "mkdocs-section-index>=0.3.10",

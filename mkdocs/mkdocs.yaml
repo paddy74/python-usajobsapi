@@ -34,7 +34,7 @@ plugins:
         python:
           options:
             docstring_style: sphinx
-  - external-files:
+  - extrafiles:
       files:
         - src: ../README.md
           dest: index.md

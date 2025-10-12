@@ -407,15 +407,16 @@ wheels = [
 ]
 
 [[package]]
-name = "mkdocs-external-files"
-version = "0.0.3"
-source = { directory = "mkdocs/mkdocs_external_files" }
+name = "mkdocs-extrafiles"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mkdocs" },
 ]
-
-[package.metadata]
-requires-dist = [{ name = "mkdocs", specifier = ">=1.6.1" }]
+sdist = { url = "https://files.pythonhosted.org/packages/d9/d5/8ce70ab35a7bd03d5ab0bf29dd3c6a34c66be5065f459b5d38a37289cd9b/mkdocs_extrafiles-1.0.0.tar.gz", hash = "sha256:08736ddc5e4932b753692a7deac91207c635d92a5fe8f78660fbe0ea75814378", size = 86114, upload-time = "2025-10-12T22:38:57.052Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9e/29/0bc8cf0da4c4668391a6f564af9c5c21e5b0300ca2613ee87ae508c5e69a/mkdocs_extrafiles-1.0.0-py3-none-any.whl", hash = "sha256:b35b452fa67039d8d90a2eee12ba71ad482b3a5b47d78e94d25f5533ecfa734e", size = 31535, upload-time = "2025-10-12T22:38:55.419Z" },
+]
 
 [[package]]
 name = "mkdocs-gen-files"
@@ -754,7 +755,7 @@ dev = [
 ]
 docs = [
     { name = "mkdocs" },
-    { name = "mkdocs-external-files" },
+    { name = "mkdocs-extrafiles" },
     { name = "mkdocs-gen-files" },
     { name = "mkdocs-literate-nav" },
     { name = "mkdocs-section-index" },
@@ -778,7 +779,7 @@ dev = [
 ]
 docs = [
     { name = "mkdocs", specifier = ">=1.6.1" },
-    { name = "mkdocs-external-files", directory = "mkdocs/mkdocs_external_files" },
+    { name = "mkdocs-extrafiles", specifier = ">=1.0.0" },
     { name = "mkdocs-gen-files", specifier = ">=0.5.0" },
     { name = "mkdocs-literate-nav", specifier = ">=0.6.2" },
     { name = "mkdocs-section-index", specifier = ">=0.3.10" },
