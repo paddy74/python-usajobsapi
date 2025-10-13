@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v1.0.1 (2025-10-13)
+
+### Bug Fixes
+
+- **ci**: Use patch releases for fix,build,perf tags
+  ([`c3e1df7`](https://github.com/paddy74/python-usajobsapi/commit/c3e1df796bd25c6d4523f3b1b54604b859e61d7c))
+
+### Build System
+
+- **deps**: Upgrade dependencies
+  ([`aa48153`](https://github.com/paddy74/python-usajobsapi/commit/aa481532b8ea5841d678226c763054edf24df9a9))
+
+- **deps**: Use external dist of mkdocs-extrafiles
+  ([`9675c6b`](https://github.com/paddy74/python-usajobsapi/commit/9675c6bfa2539bfd4e9957d8145c00b450fde652))
+
+
 ## v1.0.0 (2025-10-09)
 
 ### Features
