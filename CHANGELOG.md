@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.0.2 (2025-11-05)
+
+### Bug Fixes
+
+- **ci**: Disable renovate postUpgradeTasks
+  ([`d9bd0b9`](https://github.com/paddy74/python-usajobsapi/commit/d9bd0b93a3c6c9c46d86a82328b63495122948ea))
+
+
 ## v1.0.1 (2025-10-13)
 
 ### Bug Fixes
