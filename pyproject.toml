@@ -16,7 +16,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-build = ["uv ~= 0.8.17"]
+build = ["uv ~=0.9.13"]
 
 [project.scripts]
 usajobsapi = "usajobsapi.cli:main"
