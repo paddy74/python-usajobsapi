@@ -110,7 +110,7 @@ jobs:
           ref: ${{ steps.dispatch-ref.outputs.ref }}
 
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - uses: ./.github/actions/python-init
       - name: Build static site
