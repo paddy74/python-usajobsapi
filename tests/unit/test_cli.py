@@ -22,7 +22,7 @@ class DummyResponse(BaseModel):
 class FakeClient:
     """Test double for ``USAJobsClient`` used to capture CLI interactions."""
 
-    instances: ClassVar[list["FakeClient"]] = []
+    instances: ClassVar[list[FakeClient]] = []
 
     def __init__(
         self,

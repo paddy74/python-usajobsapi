@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import datetime as dt
 from enum import StrEnum
-from typing import Annotated, Any, Dict, List, Optional
+from typing import Annotated, Any
 
 from pydantic import (
     AfterValidator,
@@ -111,13 +111,13 @@ class SearchEndpoint(BaseModel):
 
         model_config = ConfigDict(frozen=True, extra="forbid", populate_by_name=True)
 
-        keyword: Optional[str] = Field(
+        keyword: str | None = Field(
             None,
             alias="Keyword",
             description="Issues search to find hits based on a keyword. Optional. Keyword will search for all of the words specified (or synonyms of the word) throughout the job announcement.",
             examples=["https://data.usajobs.gov/api/search?Keyword=Software"],
         )
-        position_title: Optional[str] = Field(
+        position_title: str | None = Field(
             None,
             alias="PositionTitle",
             description="""
@@ -130,7 +130,7 @@ class SearchEndpoint(BaseModel):
             ],
         )
 
-        remuneration_min: Optional[int] = Field(
+        remuneration_min: int | None = Field(
             None,
             alias="RemunerationMinimumAmount",
             description="""
@@ -142,7 +142,7 @@ class SearchEndpoint(BaseModel):
             ],
             ge=0,
         )
-        remuneration_max: Optional[int] = Field(
+        remuneration_max: int | None = Field(
             None,
             alias="RemunerationMaximumAmount",
             description="""
@@ -156,7 +156,7 @@ class SearchEndpoint(BaseModel):
             gt=0,
         )
 
-        pay_grade_high: Annotated[Optional[str], AfterValidator(isvalid_pay_grade)] = (
+        pay_grade_high: Annotated[str | None, AfterValidator(isvalid_pay_grade)] = (
             Field(
                 None,
                 alias="PayGradeHigh",
@@ -174,44 +174,42 @@ class SearchEndpoint(BaseModel):
                 examples=["https://data.usajobs.gov/api/Search?PayGradeHigh=07"],
             )
         )
-        pay_grade_low: Annotated[Optional[str], AfterValidator(isvalid_pay_grade)] = (
-            Field(
-                None,
-                alias="PayGradeLow",
-                description="Issues search to find hits with the minimum pay grade specified. Must be 01 through 15. This is the beginning grade for the job. See PayGradeHigh for more information.",
-                examples=[
-                    "https://data.usajobs.gov/api/Search?PayGradeLow=04",
-                    "https://data.usajobs.gov/api/Search?PayGradeLow=07&PayGradeHigh=09",
-                ],
-            )
+        pay_grade_low: Annotated[str | None, AfterValidator(isvalid_pay_grade)] = Field(
+            None,
+            alias="PayGradeLow",
+            description="Issues search to find hits with the minimum pay grade specified. Must be 01 through 15. This is the beginning grade for the job. See PayGradeHigh for more information.",
+            examples=[
+                "https://data.usajobs.gov/api/Search?PayGradeLow=04",
+                "https://data.usajobs.gov/api/Search?PayGradeLow=07&PayGradeHigh=09",
+            ],
         )
 
-        job_category_codes: List[str] = Field(
+        job_category_codes: list[str] = Field(
             default_factory=list,
             alias="JobCategoryCode",
             description="Issues a search to find hits with the job category series specified.",
             examples=["https://data.usajobs.gov/api/Search?JobCategoryCode=0830"],
         )
-        position_schedule_type_codes: List[int] = Field(
+        position_schedule_type_codes: list[int] = Field(
             default_factory=list,
             alias="PositionScheduleTypeCode",
             description="Issues a search to find hits for jobs matching the specified job schedule. This field is also known as work schedule.",
             examples=["https://data.usajobs.gov/api/Search?PositionSchedule=4"],
         )
-        position_offering_type_codes: List[int] = Field(
+        position_offering_type_codes: list[int] = Field(
             default_factory=list,
             alias="PositionOfferingTypeCode",
             description="Issues a search to find jobs within the specified type. This field is also known as Work Type.",
         )
 
-        organization: List[str] = Field(
+        organization: list[str] = Field(
             default_factory=list,
             alias="Organization",
             description="Issues a search to find jobs for the specified agency using the Agency Subelement Code.",
             examples=["https://data.usajobs.gov/api/Search?Organization=TR"],
         )
 
-        location_names: List[str] = Field(
+        location_names: list[str] = Field(
             default_factory=list,
             alias="LocationName",
             description="Issues a search to find hits within the specified location. This is the city or military installation name. LocationName simplifies location based search as the user does not need to know or account for each and every Location Code. LocationName will search for all location codes and ZIP codes that have that specific description.",
@@ -221,7 +219,7 @@ class SearchEndpoint(BaseModel):
             ],
         )
 
-        travel_percentage: List[int] = Field(
+        travel_percentage: list[int] = Field(
             default_factory=list,
             alias="TravelPercentage",
             description="Issues a search to find hits for jobs matching the specified travel level.",
@@ -232,12 +230,12 @@ class SearchEndpoint(BaseModel):
             ge=0,
             le=8,
         )
-        relocation: Optional[bool] = Field(
+        relocation: bool | None = Field(
             None,
             alias="RelocationIndicator",
             description="Issues a search to find hits for jobs matching the relocation filter.",
         )
-        security_clearance_required: List[int] = Field(
+        security_clearance_required: list[int] = Field(
             default_factory=list,
             alias="SecurityClearanceRequired",
             description="Issues a search to find hits for jobs matching the specified security clearance.",
@@ -248,14 +246,14 @@ class SearchEndpoint(BaseModel):
             le=8,
         )
 
-        supervisory_status: Optional[str] = Field(
+        supervisory_status: str | None = Field(
             None,
             alias="SupervisoryStatus",
             description="Issues a search to find hits for jobs matching the specified supervisory status.",
         )
 
         days_since_posted: Annotated[
-            Optional[int],
+            int | None,
             Field(
                 alias="DatePosted",
                 description="Issues a search to find hits for jobs that were posted within the number of days specified.",
@@ -264,13 +262,13 @@ class SearchEndpoint(BaseModel):
                 le=60,
             ),
         ] = None
-        job_grade_codes: List[str] = Field(
+        job_grade_codes: list[str] = Field(
             default_factory=list,
             alias="JobGradeCode",
             description="Issues a search to find hits for jobs matching the grade code specified. This field is also known as Pay Plan.",
         )
 
-        sort_field: Optional[SortField] = Field(
+        sort_field: SortField | None = Field(
             None,
             alias="SortField",
             description="Issues a search that will be sorted by the specified field.",
@@ -278,14 +276,14 @@ class SearchEndpoint(BaseModel):
                 "https://data.usajobs.gov/api/Search?PositionTitle=Electrical&SortField=PositionTitle"
             ],
         )
-        sort_direction: Optional[SortDirection] = Field(
+        sort_direction: SortDirection | None = Field(
             None,
             alias="SortDirection",
             description="Issues a search that will be sorted by the SortField specified, in the direction specified.",
         )
 
         page: Annotated[
-            Optional[int],
+            int | None,
             Field(
                 alias="Page",
                 description="Issues a search to pull the paged results specified.",
@@ -294,7 +292,7 @@ class SearchEndpoint(BaseModel):
             ),
         ] = None
         results_per_page: Annotated[
-            Optional[int],
+            int | None,
             Field(
                 alias="ResultsPerPage",
                 description="Issues a search and returns the page size specified. In this example, 25 jobs will be return for the first page.",
@@ -304,7 +302,7 @@ class SearchEndpoint(BaseModel):
             ),
         ] = None
 
-        who_may_apply: Optional[WhoMayApply] = Field(
+        who_may_apply: WhoMayApply | None = Field(
             None,
             alias="WhoMayApply",
             description="Issues a search to find hits based on the desired candidate designation. In this case, public will find jobs that U.S. citizens can apply for.",
@@ -312,7 +310,7 @@ class SearchEndpoint(BaseModel):
         )
 
         radius: Annotated[
-            Optional[int],
+            int | None,
             Field(
                 alias="Radius",
                 description="Issues a search when used along with LocationName, will expand the locations, based on the radius specified.",
@@ -323,7 +321,7 @@ class SearchEndpoint(BaseModel):
                 gt=0,
             ),
         ] = None
-        fields: Optional[FieldsMinMax] = Field(
+        fields: FieldsMinMax | None = Field(
             None,
             alias="Fields",
             description="Issues a search that will return the minimum fields or maximum number of fields in the job. Min returns only the job summary.",
@@ -333,25 +331,25 @@ class SearchEndpoint(BaseModel):
             ],
         )
 
-        salary_bucket: List[int] = Field(
+        salary_bucket: list[int] = Field(
             default_factory=list,
             alias="SalaryBucket",
             description="Issues a search that will find hits for salaries matching the grouping specified. Buckets are assigned based on salary ranges.",
         )
-        grade_bucket: List[int] = Field(
+        grade_bucket: list[int] = Field(
             default_factory=list,
             alias="GradeBucket",
             description="Issues a search that will find hits for grades that match the grouping specified.",
         )
 
-        hiring_paths: List[HiringPath] = Field(
+        hiring_paths: list[HiringPath] = Field(
             default_factory=list,
             alias="HiringPath",
             description="Issues a search that will find hits for hiring paths that match the hiring paths specified.",
             examples=["https://data.usajobs.gov/api/Search?HiringPath=public"],
         )
 
-        mission_critical_tags: List[str] = Field(
+        mission_critical_tags: list[str] = Field(
             default_factory=list,
             alias="MissionCriticalTags",
             description="Issues a search that will find hits for mission critical tags that match the grouping specified.",
@@ -360,7 +358,7 @@ class SearchEndpoint(BaseModel):
             ],
         )
 
-        position_sensitivity: List[int] = Field(
+        position_sensitivity: list[int] = Field(
             default_factory=list,
             alias="PositionSensitivity",
             description="Issues a search that will find hits for jobs matching the position sensitivity and risk specified.",
@@ -369,24 +367,22 @@ class SearchEndpoint(BaseModel):
             le=7,
         )
 
-        remote_indicator: Optional[bool] = Field(
+        remote_indicator: bool | None = Field(
             None,
             alias="RemoteIndicator",
             description="Issues a search to find hits for jobs matching the remote filter.",
         )
 
         @model_validator(mode="after")
-        def _radius_requires_location(self) -> "SearchEndpoint.Params":
-            """Only use radius filters when a locaiton is provided."""
+        def _radius_requires_location(self) -> SearchEndpoint.Params:
+            """Only use radius filters when a location is provided."""
             if self.radius is not None and not self.location_names:
                 raise ValueError("Radius requires at least one LocationName.")
             return self
 
         @field_validator("remuneration_max")
         @classmethod
-        def _check_min_le_max(
-            cls, v: Optional[int], info: ValidationInfo
-        ) -> Optional[int]:
+        def _check_min_le_max(cls, v: int | None, info: ValidationInfo) -> int | None:
             """Validate that remuneration max is >= remuneration min."""
             mn = info.data.get("remuneration_min")
             if v is not None and mn is not None and v < mn:
@@ -395,7 +391,7 @@ class SearchEndpoint(BaseModel):
                 )
             return v
 
-        def to_params(self) -> Dict[str, str]:
+        def to_params(self) -> dict[str, str]:
             """Return the serialized query-parameter dictionary."""
             return _dump_by_alias(self)
 
@@ -405,40 +401,38 @@ class SearchEndpoint(BaseModel):
     class JobCategory(BaseModel):
         """Represents a job series classification associated with a posting."""
 
-        code: Optional[str] = Field(default=None, alias="Code")
-        name: Optional[str] = Field(default=None, alias="Name")
+        code: str | None = Field(default=None, alias="Code")
+        name: str | None = Field(default=None, alias="Name")
 
     class JobGrade(BaseModel):
         """Represents the job grade (e.g. GS) tied to the posting."""
 
-        code: Optional[str] = Field(default=None, alias="Code")
-        current_grade: Optional[str] = Field(default=None, alias="CurrentGrade")
+        code: str | None = Field(default=None, alias="Code")
+        current_grade: str | None = Field(default=None, alias="CurrentGrade")
 
     class PositionSchedule(BaseModel):
         """Represents the work schedule for the position."""
 
-        code: Optional[str] = Field(default=None, alias="Code")
-        name: Optional[str] = Field(default=None, alias="Name")
+        code: str | None = Field(default=None, alias="Code")
+        name: str | None = Field(default=None, alias="Name")
 
     class PositionOfferingType(BaseModel):
         """Represents the appointment type (e.g. permanent, term)."""
 
-        code: Optional[str] = Field(default=None, alias="Code")
-        name: Optional[str] = Field(default=None, alias="Name")
+        code: str | None = Field(default=None, alias="Code")
+        name: str | None = Field(default=None, alias="Name")
 
     class PositionRemuneration(BaseModel):
         """Represents a salary range entry for the position."""
 
-        minimum: Optional[float] = Field(default=None, alias="MinimumRange")
-        maximum: Optional[float] = Field(default=None, alias="MaximumRange")
-        rate_interval_code: Optional[str] = Field(
-            default=None, alias="RateIntervalCode"
-        )
-        description: Optional[str] = Field(default=None, alias="Description")
+        minimum: float | None = Field(default=None, alias="MinimumRange")
+        maximum: float | None = Field(default=None, alias="MaximumRange")
+        rate_interval_code: str | None = Field(default=None, alias="RateIntervalCode")
+        description: str | None = Field(default=None, alias="Description")
 
         @field_validator("minimum", "maximum", mode="before")
         @classmethod
-        def _normalize_amount(cls, value: Any) -> Optional[float]:
+        def _normalize_amount(cls, value: Any) -> float | None:
             """Normalize remuneration amounts to floats."""
 
             if value in (None, ""):
@@ -458,17 +452,17 @@ class SearchEndpoint(BaseModel):
     class JobLocation(BaseModel):
         """Represents a structured job location entry."""
 
-        name: Optional[str] = Field(default=None, alias="LocationName")
-        code: Optional[str] = Field(default=None, alias="LocationCode")
-        country_code: Optional[str] = Field(default=None, alias="CountryCode")
-        state_code: Optional[str] = Field(default=None, alias="CountrySubDivisionCode")
-        city_name: Optional[str] = Field(default=None, alias="CityName")
-        latitude: Optional[float] = Field(default=None, alias="Latitude")
-        longitude: Optional[float] = Field(default=None, alias="Longitude")
+        name: str | None = Field(default=None, alias="LocationName")
+        code: str | None = Field(default=None, alias="LocationCode")
+        country_code: str | None = Field(default=None, alias="CountryCode")
+        state_code: str | None = Field(default=None, alias="CountrySubDivisionCode")
+        city_name: str | None = Field(default=None, alias="CityName")
+        latitude: float | None = Field(default=None, alias="Latitude")
+        longitude: float | None = Field(default=None, alias="Longitude")
 
         @field_validator("latitude", "longitude", mode="before")
         @classmethod
-        def _normalize_coordinate(cls, value: Any) -> Optional[float]:
+        def _normalize_coordinate(cls, value: Any) -> float | None:
             """Normalize coordinate values to floats."""
 
             if value in (None, ""):
@@ -481,103 +475,103 @@ class SearchEndpoint(BaseModel):
     class WhoMayApplyInfo(BaseModel):
         """Represents the structured WhoMayApply block."""
 
-        name: Optional[str] = Field(default=None, alias="Name")
-        code: Optional[str] = Field(default=None, alias="Code")
+        name: str | None = Field(default=None, alias="Name")
+        code: str | None = Field(default=None, alias="Code")
 
     class PositionFormatDesc(BaseModel):
         """Represents a quick summary of the job opportunity announcement."""
 
-        content: Optional[str] = Field(default=None, alias="Content")
-        label: Optional[str] = Field(default=None, alias="Label")
-        label_desc: Optional[str] = Field(default=None, alias="LabelDescription")
+        content: str | None = Field(default=None, alias="Content")
+        label: str | None = Field(default=None, alias="Label")
+        label_desc: str | None = Field(default=None, alias="LabelDescription")
 
     class UserAreaDetails(BaseModel):
         """Represents metadata stored under the UserArea.Details field."""
 
-        duties: Optional[str] = Field(
+        duties: str | None = Field(
             default=None,
             alias="MajorDuties",
             description="Description of the duties of the job.",
         )
-        education: Optional[str] = Field(
+        education: str | None = Field(
             default=None,
             alias="Education",
             description="Education required or preferred by applicants.",
         )
-        requirements: Optional[str] = Field(
+        requirements: str | None = Field(
             default=None,
             alias="Requirements",
             description="Key Requirements of the job opportunity.",
         )
-        evaluations: Optional[str] = Field(
+        evaluations: str | None = Field(
             default=None,
             alias="Evaluations",
             description="Qualification requirements of the job opportunity.",
         )
-        how_apply: Optional[str] = Field(
+        how_apply: str | None = Field(
             default=None,
             alias="HowToApply",
             description="Description of the steps to take to apply for the job opportunity.",
         )
-        what_next: Optional[str] = Field(
+        what_next: str | None = Field(
             default=None,
             alias="WhatToExpectNext",
             description="Description of what can be expected during the application process.",
         )
-        req_docs: Optional[str] = Field(
+        req_docs: str | None = Field(
             default=None,
             alias="RequiredDocuments",
             description="Required documents when applying for the job opportunity.",
         )
-        benefits: Optional[str] = Field(
+        benefits: str | None = Field(
             default=None,
             alias="Benefits being offered as part of the job opportunity.",
             description="BenefitsBenefits",
         )
-        benefits_url: Optional[str] = Field(
+        benefits_url: str | None = Field(
             default=None,
             alias="BenefitsUrl",
             description="URL to view benefit details being offered.",
         )
-        other_info: Optional[str] = Field(
+        other_info: str | None = Field(
             default=None,
             alias="OtherInformation",
             description="Additional information about the job opportunity.",
         )
-        key_reqs: List[str] = Field(
+        key_reqs: list[str] = Field(
             default_factory=list,
             alias="KeyRequirements",
             description="List of requirements for the job opportunity.",
         )
-        job_summary: Optional[str] = Field(
+        job_summary: str | None = Field(
             default=None,
             alias="JobSummary",
             description="Summary of the job opportunity.",
         )
 
-        who_may_apply: Optional[SearchEndpoint.WhoMayApplyInfo] = Field(
+        who_may_apply: SearchEndpoint.WhoMayApplyInfo | None = Field(
             default=None,
             alias="WhoMayApply",
             description="Object that contains values for name and code of who may apply to the job opportunity.",
         )
 
-        low_grade: Optional[str] = Field(
+        low_grade: str | None = Field(
             default=None,
             alias="LowGrade",
             description="Lowest potential grade level for the job opportunity.",
         )
-        high_grade: Optional[str] = Field(
+        high_grade: str | None = Field(
             default=None,
             alias="HighGrade",
             description="Highest potential grade level for the job opportunity.",
         )
 
-        sub_agency: Optional[str] = Field(
+        sub_agency: str | None = Field(
             default=None,
             alias="SubAgencyName",
             description="SubAgencyName",
         )
-        org_codes: Optional[str] = Field(
+        org_codes: str | None = Field(
             default=None,
             alias="OrganizationCodes",
             description="Organization codes separated by a slash (/).",
@@ -586,115 +580,115 @@ class SearchEndpoint(BaseModel):
     class UserArea(BaseModel):
         """Wrapper for additional USAJOBS metadata."""
 
-        details: Optional[SearchEndpoint.UserAreaDetails] = Field(
+        details: SearchEndpoint.UserAreaDetails | None = Field(
             default=None, alias="Details"
         )
-        is_radial_search: Optional[bool] = Field(
+        is_radial_search: bool | None = Field(
             default=None,
             alias="IsRadialSearch",
             description="Was a radial search preformed.",
         )
 
     class JOADescriptor(BaseModel):
-        position_id: Optional[str] = Field(
+        position_id: str | None = Field(
             default=None, alias="PositionID", description="Job Announcement Number"
         )
-        position_title: Optional[str] = Field(
+        position_title: str | None = Field(
             default=None,
             alias="PositionTitle",
             description="Title of the job offering.",
         )
-        position_uri: Optional[str] = Field(
+        position_uri: str | None = Field(
             default=None,
             alias="PositionURI",
             description="URI to view the job offering.",
         )
-        apply_uri: List[str] = Field(
+        apply_uri: list[str] = Field(
             default_factory=list,
             alias="ApplyURI",
             description="URI to apply for the job offering.",
         )
 
-        locations_display: Optional[str] = Field(
+        locations_display: str | None = Field(
             default=None, alias="PositionLocationDisplay"
         )
-        locations: List[SearchEndpoint.JobLocation] = Field(
+        locations: list[SearchEndpoint.JobLocation] = Field(
             default_factory=list,
             alias="PositionLocation",
             description="Contains values for location name, country, country subdivision, city, latitude and longitude.",
         )
 
-        organization_name: Optional[str] = Field(
+        organization_name: str | None = Field(
             default=None,
             alias="OrganizationName",
             description="Name of the organization or agency offering the position.",
         )
-        department_name: Optional[str] = Field(
+        department_name: str | None = Field(
             default=None,
             alias="DepartmentName",
             description="Name of the department within the organization or agency offering the position.",
         )
 
-        job_categories: List[SearchEndpoint.JobCategory] = Field(
+        job_categories: list[SearchEndpoint.JobCategory] = Field(
             default_factory=list,
             alias="JobCategory",
             description="List of job category objects that contain values for name and code.",
         )
-        job_grades: List[SearchEndpoint.JobGrade] = Field(
+        job_grades: list[SearchEndpoint.JobGrade] = Field(
             default_factory=list,
             alias="JobGrade",
             description="List of job grade objects that contains an code value. This field is also known as Pay Plan.",
         )
-        position_schedules: List[SearchEndpoint.PositionSchedule] = Field(
+        position_schedules: list[SearchEndpoint.PositionSchedule] = Field(
             default_factory=list,
             alias="PositionSchedule",
             description="List of position schedule objects that contains values for name and code.",
         )
-        position_offerings: List[SearchEndpoint.PositionOfferingType] = Field(
+        position_offerings: list[SearchEndpoint.PositionOfferingType] = Field(
             default_factory=list,
             alias="PositionOfferingType",
-            description="List of position offering type objects that contains values for name and code. See PositionOfferingType in paramters above for list of code values.",
+            description="List of position offering type objects that contains values for name and code. See PositionOfferingType in parameters above for list of code values.",
         )
 
-        qualification_summary: Optional[str] = Field(
+        qualification_summary: str | None = Field(
             default=None,
             alias="QualificationSummary",
             description="Summary of qualifications for the job offering.",
         )
 
-        position_remuneration: List[SearchEndpoint.PositionRemuneration] = Field(
+        position_remuneration: list[SearchEndpoint.PositionRemuneration] = Field(
             default_factory=list,
             alias="PositionRemuneration",
             description="List of position remuneration objects that contains MinimumRange, MaximumRange and RateIntervalCode. Gives the pay range and frequency.",
         )
-        position_start_date: Optional[dt.date] = Field(
+        position_start_date: dt.date | None = Field(
             default=None,
             alias="PositionStartDate",
             description="The date the job opportunity will be open to applications.",
         )
-        position_end_date: Optional[dt.date] = Field(
+        position_end_date: dt.date | None = Field(
             default=None,
             alias="PositionEndDate",
             description="Last date the job opportunity will be posted",
         )
-        publication_start_date: Optional[dt.date] = Field(
+        publication_start_date: dt.date | None = Field(
             default=None,
             alias="PublicationStartDate",
             description="Date the job opportunity is posted",
         )
-        application_close_date: Optional[dt.date] = Field(
+        application_close_date: dt.date | None = Field(
             default=None,
             alias="ApplicationCloseDate",
             description="Last date applications will be accepted for the job opportunity",
         )
 
-        position_format_desc: List[SearchEndpoint.PositionFormatDesc] = Field(
+        position_format_desc: list[SearchEndpoint.PositionFormatDesc] = Field(
             default_factory=list,
             alias="PositionFormattedDescription",
             description="Provides quick summary of job opportunity.",
         )
 
-        user_area: Optional[SearchEndpoint.UserArea] = Field(
+        user_area: SearchEndpoint.UserArea | None = Field(
             default=None, alias="UserArea"
         )
 
@@ -708,12 +702,12 @@ class SearchEndpoint(BaseModel):
         @classmethod
         def _normalize_date_fields(
             cls, value: None | dt.datetime | dt.date | str
-        ) -> Optional[dt.date]:
+        ) -> dt.date | None:
             """Coerce date-like inputs to `datetime.date`."""
 
             return _normalize_date(value)
 
-        def summary(self) -> Optional[str]:
+        def summary(self) -> str | None:
             """Helper method returning the most descriptive summary for the job."""
 
             if self.user_area and self.user_area.details:
@@ -723,26 +717,26 @@ class SearchEndpoint(BaseModel):
             return self.qualification_summary
 
     class JOAItem(BaseModel):
-        """Represents a job opportunity annoucement object search result item."""
+        """Represents a job opportunity announcement object search result item."""
 
         id: int = Field(alias="MatchedObjectId", description="Control Number")
         details: SearchEndpoint.JOADescriptor = Field(alias="MatchedObjectDescriptor")
-        rank: Optional[float] = Field(default=None, alias="RelevanceRank")
+        rank: float | None = Field(default=None, alias="RelevanceRank")
 
     class SearchResult(BaseModel):
         """Model of paginated search results."""
 
-        result_count: Optional[int] = Field(
+        result_count: int | None = Field(
             default=None,
             alias="SearchResultCount",
             description="Number of records returned in response object.",
         )
-        result_total: Optional[int] = Field(
+        result_total: int | None = Field(
             default=None,
             alias="SearchResultCountAll",
             description="Total Number of records that matched search criteria.",
         )
-        items: List[SearchEndpoint.JOAItem] = Field(
+        items: list[SearchEndpoint.JOAItem] = Field(
             default_factory=list,
             alias="SearchResultItems",
             description="Array of job opportunity announcement objects that matched search criteria.",
@@ -751,21 +745,21 @@ class SearchEndpoint(BaseModel):
     class Response(BaseModel):
         """Declarative definition of the endpoint's response object."""
 
-        language: Optional[str] = Field(
-            default=None, alias="LanguageCode", description="Response Langauge"
+        language: str | None = Field(
+            default=None, alias="LanguageCode", description="Response Language"
         )
-        params: Optional[SearchEndpoint.Params] = Field(
+        params: SearchEndpoint.Params | None = Field(
             default=None,
             alias="SearchParameters",
             description="Query parameters used in search request.",
         )
 
         # Results are wrapped under SearchResult
-        search_result: Optional[SearchEndpoint.SearchResult] = Field(
+        search_result: SearchEndpoint.SearchResult | None = Field(
             default=None, alias="SearchResult"
         )
 
-        def jobs(self) -> List[SearchEndpoint.JOAItem]:
+        def jobs(self) -> list[SearchEndpoint.JOAItem]:
             """Helper method to directly expose search result items from the response object."""
             if not self.search_result:
                 return []

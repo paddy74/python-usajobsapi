@@ -1,4 +1,5 @@
 from mkdocs.config.defaults import MkDocsConfig
+
 from usajobsapi import _version as md
 
 

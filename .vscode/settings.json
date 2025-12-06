@@ -37,6 +37,10 @@
     "usajobsapi",
     "docstrings",
     "basedpyright",
-    "baselevel"
+    "baselevel",
+    "rtype",
+    "telework",
+    "historicjoa",
+    "inrange"
   ]
 }

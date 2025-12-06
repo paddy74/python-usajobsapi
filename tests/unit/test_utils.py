@@ -1,6 +1,6 @@
 import datetime as dt
 from enum import StrEnum
-from typing import Annotated, Any, List, Optional
+from typing import Annotated, Any
 
 import pytest
 from pydantic import BaseModel, Field
@@ -24,20 +24,20 @@ class Color(StrEnum):
 
 class QueryModel(BaseModel):
     # scalars
-    a_str: Annotated[Optional[str], Field(serialization_alias="A")] = None
-    a_int: Annotated[Optional[int], Field(serialization_alias="D")] = None
+    a_str: Annotated[str | None, Field(serialization_alias="A")] = None
+    a_int: Annotated[int | None, Field(serialization_alias="D")] = None
 
     # bools and enums
-    a_bool: Annotated[Optional[bool], Field(serialization_alias="B")] = None
-    enum_field: Annotated[Optional[Color], Field(serialization_alias="E")] = None
+    a_bool: Annotated[bool | None, Field(serialization_alias="B")] = None
+    enum_field: Annotated[Color | None, Field(serialization_alias="E")] = None
 
     # lists
-    a_list_str: List[str] = Field(default_factory=list, serialization_alias="C")
-    a_list_int: List[int] = Field(default_factory=list, serialization_alias="H")
+    a_list_str: list[str] = Field(default_factory=list, serialization_alias="C")
+    a_list_int: list[int] = Field(default_factory=list, serialization_alias="H")
 
     # outliers
-    empty_list: List[str] = Field(default_factory=list, serialization_alias="F")
-    none_field: Annotated[Optional[str], Field(serialization_alias="G")] = None
+    empty_list: list[str] = Field(default_factory=list, serialization_alias="F")
+    none_field: Annotated[str | None, Field(serialization_alias="G")] = None
 
 
 # test _normalize_date

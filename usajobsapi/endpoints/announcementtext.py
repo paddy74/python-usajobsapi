@@ -6,8 +6,6 @@ Fetch the rendered job announcement text for a single job opportunity announceme
 Pair this endpoint with a control number discovered from [`SearchEndpoint.JOAItem`][usajobsapi.endpoints.search.SearchEndpoint.JOAItem] to pull the full HTML description.
 """
 
-from typing import Dict
-
 from pydantic import BaseModel
 
 from usajobsapi.utils import _dump_by_alias
@@ -22,7 +20,7 @@ class AnnouncementTextEndpoint(BaseModel):
     PATH: str = "/api/historicjoa/announcementtext"
 
     class Params(BaseModel):
-        def to_params(self) -> Dict[str, str]:
+        def to_params(self) -> dict[str, str]:
             return _dump_by_alias(self)
 
     class Response(BaseModel):

@@ -7,7 +7,6 @@ To execute a query, pair the [`USAJobsClient`][usajobsapi.client.USAJobsClient] 
 """
 
 from collections.abc import Iterator
-from typing import Dict, Optional
 from urllib.parse import urlparse
 
 import requests
@@ -24,12 +23,12 @@ class USAJobsClient:
 
     def __init__(
         self,
-        url: Optional[str] = "https://data.usajobs.gov",
+        url: str | None = "https://data.usajobs.gov",
         ssl_verify: bool = True,
-        timeout: Optional[float] = 60,
-        auth_user: Optional[str] = None,
-        auth_key: Optional[str] = None,
-        session: Optional[requests.Session] = None,
+        timeout: float | None = 60,
+        auth_user: str | None = None,
+        auth_key: str | None = None,
+        session: requests.Session | None = None,
     ) -> None:
         """
         :param url: The URL of the USAJOBS REST API server, defaults to "https://data.usajobs.gov"
@@ -77,7 +76,7 @@ class USAJobsClient:
         return f"{self._url}{path}"
 
     def _request(
-        self, method: str, path: str, params: Dict[str, str], add_auth: bool = False
+        self, method: str, path: str, params: dict[str, str], add_auth: bool = False
     ) -> requests.Response:
         """Helper method for sending HTTP requests.
 
@@ -86,7 +85,7 @@ class USAJobsClient:
         :param path: Request URL
         :type path: str
         :param params: Request query parameters
-        :type params: Dict[str, str]
+        :type params: dict[str, str]
         :param add_auth: If true, includes the stored authentication headers with the request, defaults to False
         :type add_auth: bool, optional
         :return: Request response
@@ -139,7 +138,7 @@ class USAJobsClient:
         """
 
         # Get page parameters by object name or alias
-        page_number: Optional[int] = kwargs.pop("page", kwargs.pop("Page", None))
+        page_number: int | None = kwargs.pop("page", kwargs.pop("Page", None))
         results_per_page = kwargs.pop(
             "results_per_page", kwargs.pop("ResultsPerPage", None)
         )
@@ -195,8 +194,7 @@ class USAJobsClient:
         :rtype: Iterator[SearchEndpoint.JOAItem]
         """
         for resp in self.search_jobs_pages(**kwargs):
-            for item in resp.jobs():
-                yield item
+            yield from resp.jobs()
 
     def historic_joa(self, **kwargs) -> HistoricJoaEndpoint.Response:
         """Query the Historic JOAs API.
@@ -274,8 +272,7 @@ class USAJobsClient:
 
             resp = self.historic_joa(**call_kwargs)
 
-            for item in resp.data:
-                yield item
+            yield from resp.data
 
             next_token = resp.next_token()
             # Handle duplicate tokens

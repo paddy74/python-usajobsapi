@@ -9,7 +9,6 @@ Access archived job opportunity announcements with date filters, control numbers
 """
 
 import datetime as dt
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -29,38 +28,36 @@ class HistoricJoaEndpoint(BaseModel):
 
         model_config = ConfigDict(frozen=True, extra="forbid", populate_by_name=True)
 
-        hiring_agency_codes: Optional[str] = Field(
+        hiring_agency_codes: str | None = Field(
             None, serialization_alias="HiringAgencyCodes"
         )
-        hiring_department_codes: Optional[str] = Field(
+        hiring_department_codes: str | None = Field(
             None, serialization_alias="HiringDepartmentCodes"
         )
-        position_series: Optional[str] = Field(
-            None, serialization_alias="PositionSeries"
-        )
-        announcement_numbers: Optional[str] = Field(
+        position_series: str | None = Field(None, serialization_alias="PositionSeries")
+        announcement_numbers: str | None = Field(
             None, serialization_alias="AnnouncementNumbers"
         )
-        usajobs_control_numbers: Optional[str] = Field(
+        usajobs_control_numbers: str | None = Field(
             None, serialization_alias="USAJOBSControlNumbers"
         )
-        start_position_open_date: Optional[dt.date] = Field(
+        start_position_open_date: dt.date | None = Field(
             default=None, serialization_alias="StartPositionOpenDate"
         )
-        end_position_open_date: Optional[dt.date] = Field(
+        end_position_open_date: dt.date | None = Field(
             default=None, serialization_alias="EndPositionOpenDate"
         )
-        start_position_close_date: Optional[dt.date] = Field(
+        start_position_close_date: dt.date | None = Field(
             default=None, serialization_alias="StartPositionCloseDate"
         )
-        end_position_close_date: Optional[dt.date] = Field(
+        end_position_close_date: dt.date | None = Field(
             default=None, serialization_alias="EndPositionCloseDate"
         )
-        continuation_token: Optional[str] = Field(
+        continuation_token: str | None = Field(
             None, serialization_alias="continuationToken"
         )
 
-        def to_params(self) -> Dict[str, str]:
+        def to_params(self) -> dict[str, str]:
             """Serialize params into payload-ready query parameters."""
             return _dump_by_alias(self)
 
@@ -74,7 +71,7 @@ class HistoricJoaEndpoint(BaseModel):
         @classmethod
         def _normalize_date_fields(
             cls, value: None | dt.datetime | dt.date | str
-        ) -> Optional[dt.date]:
+        ) -> dt.date | None:
             """Coerce date-like inputs to `datetime.date`."""
 
             return _normalize_date(value)
@@ -86,108 +83,94 @@ class HistoricJoaEndpoint(BaseModel):
         """A single historic job opportunity announcement record."""
 
         class HiringPath(BaseModel):
-            hiring_path: Optional[str] = Field(default=None, alias="hiringPath")
+            hiring_path: str | None = Field(default=None, alias="hiringPath")
 
         class JobCategory(BaseModel):
-            series: Optional[str] = Field(default=None, alias="series")
+            series: str | None = Field(default=None, alias="series")
 
         class PositionLocation(BaseModel):
-            position_location_city: Optional[str] = Field(
+            position_location_city: str | None = Field(
                 default=None, alias="positionLocationCity"
             )
-            position_location_state: Optional[str] = Field(
+            position_location_state: str | None = Field(
                 default=None, alias="positionLocationState"
             )
-            position_location_country: Optional[str] = Field(
+            position_location_country: str | None = Field(
                 default=None, alias="positionLocationCountry"
             )
 
         usajobs_control_number: int = Field(alias="usajobsControlNumber")
-        hiring_agency_code: Optional[str] = Field(
-            default=None, alias="hiringAgencyCode"
-        )
-        hiring_agency_name: Optional[str] = Field(
-            default=None, alias="hiringAgencyName"
-        )
-        hiring_department_code: Optional[str] = Field(
+        hiring_agency_code: str | None = Field(default=None, alias="hiringAgencyCode")
+        hiring_agency_name: str | None = Field(default=None, alias="hiringAgencyName")
+        hiring_department_code: str | None = Field(
             default=None, alias="hiringDepartmentCode"
         )
-        hiring_department_name: Optional[str] = Field(
+        hiring_department_name: str | None = Field(
             default=None, alias="hiringDepartmentName"
         )
-        agency_level: Optional[int] = Field(default=None, alias="agencyLevel")
-        agency_level_sort: Optional[str] = Field(default=None, alias="agencyLevelSort")
-        appointment_type: Optional[str] = Field(default=None, alias="appointmentType")
-        work_schedule: Optional[str] = Field(default=None, alias="workSchedule")
-        pay_scale: Optional[str] = Field(default=None, alias="payScale")
-        salary_type: Optional[str] = Field(default=None, alias="salaryType")
-        vendor: Optional[str] = Field(default=None, alias="vendor")
-        travel_requirement: Optional[str] = Field(
-            default=None, alias="travelRequirement"
-        )
-        telework_eligible: Optional[bool] = Field(
-            default=None, alias="teleworkEligible"
-        )
-        service_type: Optional[str] = Field(default=None, alias="serviceType")
-        security_clearance_required: Optional[bool] = Field(
+        agency_level: int | None = Field(default=None, alias="agencyLevel")
+        agency_level_sort: str | None = Field(default=None, alias="agencyLevelSort")
+        appointment_type: str | None = Field(default=None, alias="appointmentType")
+        work_schedule: str | None = Field(default=None, alias="workSchedule")
+        pay_scale: str | None = Field(default=None, alias="payScale")
+        salary_type: str | None = Field(default=None, alias="salaryType")
+        vendor: str | None = Field(default=None, alias="vendor")
+        travel_requirement: str | None = Field(default=None, alias="travelRequirement")
+        telework_eligible: bool | None = Field(default=None, alias="teleworkEligible")
+        service_type: str | None = Field(default=None, alias="serviceType")
+        security_clearance_required: bool | None = Field(
             default=None, alias="securityClearanceRequired"
         )
-        security_clearance: Optional[str] = Field(
-            default=None, alias="securityClearance"
-        )
-        who_may_apply: Optional[str] = Field(default=None, alias="whoMayApply")
-        announcement_closing_type_code: Optional[str] = Field(
+        security_clearance: str | None = Field(default=None, alias="securityClearance")
+        who_may_apply: str | None = Field(default=None, alias="whoMayApply")
+        announcement_closing_type_code: str | None = Field(
             default=None, alias="announcementClosingTypeCode"
         )
-        announcement_closing_type_description: Optional[str] = Field(
+        announcement_closing_type_description: str | None = Field(
             default=None, alias="announcementClosingTypeDescription"
         )
-        position_open_date: Optional[dt.date] = Field(
+        position_open_date: dt.date | None = Field(
             default=None, alias="positionOpenDate"
         )
-        position_close_date: Optional[dt.date] = Field(
+        position_close_date: dt.date | None = Field(
             default=None, alias="positionCloseDate"
         )
-        position_expire_date: Optional[dt.date] = Field(
+        position_expire_date: dt.date | None = Field(
             default=None, alias="positionExpireDate"
         )
-        announcement_number: Optional[str] = Field(
+        announcement_number: str | None = Field(
             default=None, alias="announcementNumber"
         )
-        hiring_subelement_name: Optional[str] = Field(
+        hiring_subelement_name: str | None = Field(
             default=None, alias="hiringSubelementName"
         )
-        position_title: Optional[str] = Field(default=None, alias="positionTitle")
-        minimum_grade: Optional[str] = Field(default=None, alias="minimumGrade")
-        maximum_grade: Optional[str] = Field(default=None, alias="maximumGrade")
-        promotion_potential: Optional[str] = Field(
+        position_title: str | None = Field(default=None, alias="positionTitle")
+        minimum_grade: str | None = Field(default=None, alias="minimumGrade")
+        maximum_grade: str | None = Field(default=None, alias="maximumGrade")
+        promotion_potential: str | None = Field(
             default=None, alias="promotionPotential"
         )
-        minimum_salary: Optional[float] = Field(default=None, alias="minimumSalary")
-        maximum_salary: Optional[float] = Field(default=None, alias="maximumSalary")
-        supervisory_status: Optional[bool] = Field(
-            default=None, alias="supervisoryStatus"
-        )
-        drug_test_required: Optional[bool] = Field(
-            default=None, alias="drugTestRequired"
-        )
-        relocation_expenses_reimbursed: Optional[bool] = Field(
+        minimum_salary: float | None = Field(default=None, alias="minimumSalary")
+        maximum_salary: float | None = Field(default=None, alias="maximumSalary")
+        supervisory_status: bool | None = Field(default=None, alias="supervisoryStatus")
+        drug_test_required: bool | None = Field(default=None, alias="drugTestRequired")
+        relocation_expenses_reimbursed: bool | None = Field(
             default=None, alias="relocationExpensesReimbursed"
         )
-        total_openings: Optional[str] = Field(default=None, alias="totalOpenings")
-        disable_apply_online: Optional[bool] = Field(
+        total_openings: str | None = Field(default=None, alias="totalOpenings")
+        disable_apply_online: bool | None = Field(
             default=None, alias="disableApplyOnline"
         )
-        position_opening_status: Optional[str] = Field(
+        position_opening_status: str | None = Field(
             default=None, alias="positionOpeningStatus"
         )
-        hiring_paths: List["HistoricJoaEndpoint.Item.HiringPath"] = Field(
+        hiring_paths: list["HistoricJoaEndpoint.Item.HiringPath"] = Field(
             default_factory=list, alias="hiringPaths"
         )
-        job_categories: List["HistoricJoaEndpoint.Item.JobCategory"] = Field(
+        job_categories: list["HistoricJoaEndpoint.Item.JobCategory"] = Field(
             default_factory=list, alias="jobCategories"
         )
-        position_locations: List["HistoricJoaEndpoint.Item.PositionLocation"] = Field(
+        position_locations: list["HistoricJoaEndpoint.Item.PositionLocation"] = Field(
             default_factory=list, alias="positionLocations"
         )
 
@@ -201,7 +184,7 @@ class HistoricJoaEndpoint(BaseModel):
             mode="before",
         )
         @classmethod
-        def _normalize_yn_boolean(cls, value: None | bool | str) -> Optional[bool]:
+        def _normalize_yn_boolean(cls, value: None | bool | str) -> bool | None:
             """Coerce bool-like outputs to `bool`."""
 
             return _normalize_yn_bool(value)
@@ -209,25 +192,23 @@ class HistoricJoaEndpoint(BaseModel):
     class PagingMeta(BaseModel):
         """Pagination metadata returned alongside Historic JOA results."""
 
-        total_count: Optional[int] = Field(default=None, alias="totalCount")
-        page_size: Optional[int] = Field(default=None, alias="pageSize")
-        continuation_token: Optional[str] = Field(
-            default=None, alias="continuationToken"
-        )
+        total_count: int | None = Field(default=None, alias="totalCount")
+        page_size: int | None = Field(default=None, alias="pageSize")
+        continuation_token: str | None = Field(default=None, alias="continuationToken")
 
     class Paging(BaseModel):
         """Container for pagination metadata and optional navigation links."""
 
         metadata: "HistoricJoaEndpoint.PagingMeta"
-        next: Optional[str] = None
+        next: str | None = None
 
     class Response(BaseModel):
         """Declarative definition of the endpoint's response object."""
 
-        paging: Optional["HistoricJoaEndpoint.Paging"] = None
-        data: List["HistoricJoaEndpoint.Item"] = Field(default_factory=list)
+        paging: "HistoricJoaEndpoint.Paging | None" = None
+        data: list["HistoricJoaEndpoint.Item"] = Field(default_factory=list)
 
-        def next_token(self) -> Optional[str]:
+        def next_token(self) -> str | None:
             """Return the continuation token for requesting the next page."""
 
             return (

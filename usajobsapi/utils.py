@@ -6,12 +6,12 @@ Shared helpers keep endpoint payloads consistent and ergonomic. These utilities 
 
 import datetime as dt
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
 
-def _normalize_date(value: None | dt.datetime | dt.date | str) -> Optional[dt.date]:
+def _normalize_date(value: None | dt.datetime | dt.date | str) -> dt.date | None:
     """Normalize to `datetime.date`."""
 
     if value is None:
@@ -30,7 +30,7 @@ def _normalize_date(value: None | dt.datetime | dt.date | str) -> Optional[dt.da
     raise TypeError(msg)
 
 
-def _normalize_yn_bool(value: None | bool | str) -> Optional[bool]:
+def _normalize_yn_bool(value: None | bool | str) -> bool | None:
     """Normalize `"Y"`/`"N"` to `bool`."""
 
     if value is None:
@@ -47,13 +47,13 @@ def _normalize_yn_bool(value: None | bool | str) -> Optional[bool]:
     raise TypeError("Expected value type of bool or Y/N string")
 
 
-def _normalize_param(value: Any) -> Optional[str]:
+def _normalize_param(value: Any) -> str | None:
     """Normalize query parameters to the format expected by USAJOBS.
 
     :param value: Query parameter to normalize
     :type value: Any
     :return: Query parameter normalized for the USAJOBS REST API.
-    :rtype: Optional[str]
+    :rtype: str | None
     """
     if value is None:
         # None -> omit
@@ -81,19 +81,19 @@ def _normalize_param(value: Any) -> Optional[str]:
     return str(value)
 
 
-def _dump_by_alias(model: BaseModel) -> Dict[str, str]:
+def _dump_by_alias(model: BaseModel) -> dict[str, str]:
     """Dump a Pydantic model to a query-param dict using the model's field aliases and USAJOBS formatting rules (lists + bools).
 
     :param model: Pydantic model instance to export using field aliases
     :type model: BaseModel
     :return: Mapping of alias names to normalized parameter values
-    :rtype: Dict[str, str]
+    :rtype: dict[str, str]
     """
     # Use the API's wire names and drop `None`s
     raw = model.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     # Normalize values
-    out: Dict[str, str] = {}
+    out: dict[str, str] = {}
     for k, v in raw.items():
         norm_val = _normalize_param(v)
         if norm_val:

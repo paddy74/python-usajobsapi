@@ -1,5 +1,3 @@
-from typing import List
-
 from usajobsapi.utils import _is_inrange
 
 
@@ -11,7 +9,7 @@ def isvalid_pay_grade(value: str):
     raise ValueError(f"{value} must be a GS pay grade (01-15)")
 
 
-def isvalid_pos_sensitivity(value: List[int]):
+def isvalid_pos_sensitivity(value: list[int]):
     if all(_is_inrange(x, 1, 7) for x in value):
         return value
     raise ValueError(
