@@ -171,5 +171,5 @@ Questions or issues? Please open an issue on the repository's issue tracker.
 [codecov-img]: https://codecov.io/github/paddy74/python-usajobsapi/graph/badge.svg?token=IH3MTBANTT
 [codestyle-lnk]: https://docs.astral.sh/ruff
 [codestyle-img]: https://img.shields.io/badge/code%20style-ruff-000000.svg
-[license-lnk]: ./LICENSE
-[license-img]: https://img.shields.io/pypi/l/python-usajobsapi?color=light-green&logo=gplv3&logoColor=white
+[license-lnk]: https://www.gnu.org/licenses/gpl-3.0
+[license-img]: https://img.shields.io/badge/License-GPLv3-blue.svg?color=light-green&logo=gplv3&logoColor=white
