@@ -28,19 +28,22 @@
 
   // code-spell-checker
   "cSpell.diagnosticLevel": "Hint",
-  "cSpell.ignorePaths": [".vscode"],
+  "cSpell.ignorePaths": ["uv.lock", ".vscode"],
+  "cSpell.allowCompoundWords": true,
   "cSpell.words": [
-    "prek",
-    "mkdocs",
-    "mkdocstrings",
-    "pyproject",
-    "usajobsapi",
-    "docstrings",
     "basedpyright",
     "baselevel",
+    "docstrings",
+    "historicjoa",
+    "inrange",
+    "mkdocs",
+    "mkdocstrings",
+    "prek",
+    "pydantic",
+    "pyproject",
+    "pyupgrade",
     "rtype",
     "telework",
-    "historicjoa",
-    "inrange"
+    "usajobsapi"
   ]
 }
