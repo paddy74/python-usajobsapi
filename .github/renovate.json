@@ -27,14 +27,43 @@
 
   "packageRules": [
     {
-      "matchDepTypes": ["dev"],
-      "groupName": "dev-dependencies",
-      "groupSlug": "dev-deps"
+      "groupName": "pre-commit hooks",
+      "groupSlug": "precommit-hooks",
+      "matchManagers": ["pre-commit"]
+    },
+    {
+      "groupName": "docs python dependencies",
+      "groupSlug": "docs-deps",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["project.dependency-groups.docs"]
+    },
+    {
+      "groupName": "dev python dependencies",
+      "groupSlug": "dev-deps",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["project.dependency-groups.dev"]
     },
     {
       "matchManagers": ["pep621"],
-      "matchDepTypes": ["dependencies"],
+      "matchDepTypes": ["project.dependencies"],
+      "matchUpdateTypes": ["major"],
       "semanticCommitType": "build"
+    },
+    {
+      "groupName": "python dependencies (minor)",
+      "groupSlug": "deps-minor",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["project.dependencies"],
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitType": "build"
+    },
+    {
+      "groupName": "python dependencies (patch)",
+      "groupSlug": "deps-patch",
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["project.dependencies"],
+      "matchUpdateTypes": ["patch"],
+      "semanticCommitType": "fix"
     } /* ,
     // postUpgradeTasks is only supported in self-hosted Renovate
     {
