@@ -22,9 +22,9 @@ def _normalize_date(value: None | dt.datetime | dt.date | str) -> dt.date | None
         return value
     if isinstance(value, str):
         try:
-            return dt.date.fromisoformat(value)
+            return dt.datetime.fromisoformat(value).date()
         except ValueError as exc:
-            msg = "Value must be an ISO 8601 date string (YYYY-MM-DD)"
+            msg = f"Value must be an ISO 8601 date string (YYYY-MM-DD). Found {value if len(value) <= 26 else value[:23] + '...'}"
             raise ValueError(msg) from exc
     msg = "Expected value type of datetime, date, or ISO date string"
     raise TypeError(msg)
