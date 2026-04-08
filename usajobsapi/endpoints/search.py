@@ -488,7 +488,7 @@ class SearchEndpoint(BaseModel):
     class UserAreaDetails(BaseModel):
         """Represents metadata stored under the UserArea.Details field."""
 
-        duties: str | None = Field(
+        duties: list[str] | None = Field(
             default=None,
             alias="MajorDuties",
             description="Description of the duties of the job.",

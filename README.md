@@ -66,7 +66,7 @@ client = USAJobsClient(auth_user="name@example.com", auth_key="YOUR_API_KEY")
 response = client.search_jobs(keyword="data scientist", location_names=["Atlanta", "Georgia"])
 
 for job in response.jobs():
-    print(job.position_title)
+    print(job.details.position_title)
 ```
 
 ### Pagination
@@ -77,8 +77,8 @@ Use streaming helpers to to iterate through multiple pages or individual result 
 
 ```python
 for job in client.search_jobs_items(keyword="cybersecurity", results_per_page=100):
-    if "Remote" in (job.position_location_display or ""):
-        print(job.position_title, job.organization_name)
+    if "Remote" in (job.details.locations_display or ""):
+        print(job.details.position_title, job.details.organization_name)
 ```
 
 ### Command Line Interface
