@@ -38,6 +38,7 @@ dev = [
     "prek>=0.2.19",
     "pytest>=9.0.1",
     "pytest-cov>=7.0.0",
+    "pytest-env>=1.6.0",
     "ruff>=0.14.8",
 ]
 docs = [
@@ -87,6 +88,9 @@ extend-select = ["UP"]  # pyupgrade
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+
+[tool.pytest_env]
+env_files = [".env"]
 
 [tool.coverage.run]
 branch = true

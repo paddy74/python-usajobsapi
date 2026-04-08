@@ -113,6 +113,13 @@ uv run ruff check
 uv run ruff format
 ```
 
+To run integration tests, create an `.env` file with values for `USAJOBS_USER_AGENT` and `USAJOBS_API_KEY`.
+
+```ini
+USAJOBS_USER_AGENT="email@example.com"
+USAJOBS_API_KEY="...."
+```
+
 ### Key Development Principles
 
 - Keep Pydantic models exhaustive and prefer descriptive field metadata so that auto-generated docs remain informative.
