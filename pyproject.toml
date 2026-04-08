@@ -11,12 +11,12 @@ keywords = ["api", "wrapper"]
 license = {file = "LICENSE"}
 dependencies = [
     "pydantic>=2.12.5",
-    "requests>=2.32.5",
+    "requests>=2.33.1",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-build = ["uv ~=0.9.16"]
+build = ["uv ~=0.11.4"]
 
 [project.scripts]
 usajobsapi = "usajobsapi.cli:main"
@@ -34,12 +34,12 @@ packages = ["usajobsapi"]
 
 [dependency-groups]
 dev = [
-    "basedpyright>=1.35.0",
-    "prek>=0.2.19",
-    "pytest>=9.0.1",
-    "pytest-cov>=7.0.0",
+    "basedpyright>=1.39.0",
+    "prek>=0.3.8",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
     "pytest-env>=1.6.0",
-    "ruff>=0.14.8",
+    "ruff>=0.15.9",
 ]
 docs = [
     "mkdocs-extrafiles>=1.0.1",
